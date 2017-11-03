@@ -1,0 +1,31 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 15
+VisualStudioVersion = 15.0.26730.16
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PLAgent", "PLAgent\PLAgent.csproj", "{50D0F57F-DAAB-484D-B153-BF9EA4C9B1FD}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PLAgentDll", "..\PLAgentDll\PLAgentDll.csproj", "{2894EF8F-62A2-4E36-A440-CE4C2CFCA6FD}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{50D0F57F-DAAB-484D-B153-BF9EA4C9B1FD}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{50D0F57F-DAAB-484D-B153-BF9EA4C9B1FD}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{50D0F57F-DAAB-484D-B153-BF9EA4C9B1FD}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{50D0F57F-DAAB-484D-B153-BF9EA4C9B1FD}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2894EF8F-62A2-4E36-A440-CE4C2CFCA6FD}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2894EF8F-62A2-4E36-A440-CE4C2CFCA6FD}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2894EF8F-62A2-4E36-A440-CE4C2CFCA6FD}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2894EF8F-62A2-4E36-A440-CE4C2CFCA6FD}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {EC0AF396-3916-45B6-A29B-EC2DADD1F06D}
+	EndGlobalSection
+EndGlobal
