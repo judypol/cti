@@ -1,0 +1,37 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 15
+VisualStudioVersion = 15.0.26730.16
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PLAgentBar", "PLAgentBar.csproj", "{BE7012DD-0C0D-4B83-9AA9-71D7C702B01A}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DemoCti", "..\DemoCti\DemoCti.csproj", "{2BFD8DA2-29D1-480B-B193-768F4CA7D404}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PLAgentDll", "..\PLAgentDll\PLAgentDll.csproj", "{ED7AEAA8-D9CD-4C2F-A0F1-09A0E71D734A}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{BE7012DD-0C0D-4B83-9AA9-71D7C702B01A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{BE7012DD-0C0D-4B83-9AA9-71D7C702B01A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{BE7012DD-0C0D-4B83-9AA9-71D7C702B01A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{BE7012DD-0C0D-4B83-9AA9-71D7C702B01A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2BFD8DA2-29D1-480B-B193-768F4CA7D404}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2BFD8DA2-29D1-480B-B193-768F4CA7D404}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2BFD8DA2-29D1-480B-B193-768F4CA7D404}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2BFD8DA2-29D1-480B-B193-768F4CA7D404}.Release|Any CPU.Build.0 = Release|Any CPU
+		{ED7AEAA8-D9CD-4C2F-A0F1-09A0E71D734A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{ED7AEAA8-D9CD-4C2F-A0F1-09A0E71D734A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{ED7AEAA8-D9CD-4C2F-A0F1-09A0E71D734A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{ED7AEAA8-D9CD-4C2F-A0F1-09A0E71D734A}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {6051E9DA-C7D3-499B-ADBE-F2B076F94752}
+	EndGlobalSection
+EndGlobal

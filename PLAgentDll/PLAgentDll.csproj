@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <ProjectGuid>{2894EF8F-62A2-4E36-A440-CE4C2CFCA6FD}</ProjectGuid>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <OutputType>Library</OutputType>
+    <AssemblyName>PLAgentDll</AssemblyName>
+    <TargetFrameworkVersion>v2.0</TargetFrameworkVersion>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Platform)' == 'AnyCPU' ">
+    <PlatformTarget>AnyCPU</PlatformTarget>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
+    <OutputPath>bin\Debug\</OutputPath>
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
+    <OutputPath>bin\Release\</OutputPath>
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="log4net" />
+    <Reference Include="System" />
+    <Reference Include="System.Xml" />
+    <Reference Include="System.Data" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="NetDll\clsSocket.cs" />
+    <Compile Include="PLAgentDll\AgentDll.cs" />
+    <Compile Include="PLAgentDll\AgentEvent.cs" />
+    <Compile Include="PLAgentDll\AgentEventType.cs" />
+    <Compile Include="PLAgentDll\Agent_Online_Struct.cs" />
+    <Compile Include="PLAgentDll\Agent_Role_And_Right_Struct.cs" />
+    <Compile Include="PLAgentDll\Apply_Change_Status.cs" />
+    <Compile Include="PLAgentDll\Apply_State.cs" />
+    <Compile Include="PLAgentDll\CommandResult.cs" />
+    <Compile Include="PLAgentDll\Customer_Info_Struct.cs" />
+    <Compile Include="PLAgentDll\EnumHelper.cs" />
+    <Compile Include="PLAgentDll\EventQualifier.cs" />
+    <Compile Include="PLAgentDll\IAgentDll.cs" />
+    <Compile Include="PLAgentDll\IAgentEvents.cs" />
+    <Compile Include="PLAgentDll\Leg_Info_Struct.cs" />
+    <Compile Include="PLAgentDll\PLMsgInfo.cs" />
+    <Compile Include="PLAgentDll\Queue_Customer_Info_Struct.cs" />
+    <Compile Include="PLAgentDll\Queue_Statis_Struct.cs" />
+    <Compile Include="PLAgentDll\Relation_Info_Struct.cs" />
+    <Compile Include="PLAgentDll\StateObject.cs" />
+    <Compile Include="PLAgentDll\XmlControl.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+</Project>
