@@ -29,51 +29,51 @@ namespace PLAgent
             return result;
         }
 
-        public static string AgentStatus2Str(AgentBar.Agent_Status agentStatus)
+        public static string AgentStatus2Str(Agent_Status agentStatus)
         {
             string agentName;
             switch (agentStatus)
             {
-                case AgentBar.Agent_Status.AGENT_STATUS_UNKNOWN:
+                case  Agent_Status.AGENT_STATUS_UNKNOWN:
                     agentName = "未知";
                     break;
-                case AgentBar.Agent_Status.AGENT_STATUS_OFFLINE:
+                case  Agent_Status.AGENT_STATUS_OFFLINE:
                     agentName = "离线";
                     break;
-                case AgentBar.Agent_Status.AGENT_STATUS_IDLE:
+                case  Agent_Status.AGENT_STATUS_IDLE:
                     agentName = "空闲";
                     break;
-                case AgentBar.Agent_Status.AGENT_STATUS_RING:
+                case  Agent_Status.AGENT_STATUS_RING:
                     agentName = "响铃";
                     break;
-                case AgentBar.Agent_Status.AGENT_STATUS_TALKING:
+                case  Agent_Status.AGENT_STATUS_TALKING:
                     agentName = "通话";
                     break;
-                case AgentBar.Agent_Status.AGENT_STATUS_HOLD:
+                case  Agent_Status.AGENT_STATUS_HOLD:
                     agentName = "保持";
                     break;
-                case AgentBar.Agent_Status.AGENT_STATUS_ACW:
+                case  Agent_Status.AGENT_STATUS_ACW:
                     agentName = "后处理";
                     break;
-                case AgentBar.Agent_Status.AGENT_STATUS_CAMP_ON:
+                case  Agent_Status.AGENT_STATUS_CAMP_ON:
                     agentName = "预占";
                     break;
-                case AgentBar.Agent_Status.AGENT_STATUS_BUSY:
+                case  Agent_Status.AGENT_STATUS_BUSY:
                     agentName = "忙碌";
                     break;
-                case AgentBar.Agent_Status.AGENT_STATUS_LEAVE:
+                case  Agent_Status.AGENT_STATUS_LEAVE:
                     agentName = "离开";
                     break;
-                case AgentBar.Agent_Status.AGENT_STATUS_CALL_OUT:
+                case  Agent_Status.AGENT_STATUS_CALL_OUT:
                     agentName = "手动外呼中";
                     break;
-                case AgentBar.Agent_Status.AGENT_STATUS_MONITOR:
+                case  Agent_Status.AGENT_STATUS_MONITOR:
                     agentName = "监控";
                     break;
-                case AgentBar.Agent_Status.AGENT_STATUS_CALLING_OUT:
+                case  Agent_Status.AGENT_STATUS_CALLING_OUT:
                     agentName = "呼出中";
                     break;
-                case AgentBar.Agent_Status.AGENT_STATUS_MUTE:
+                case  Agent_Status.AGENT_STATUS_MUTE:
                     agentName = "静音";
                     break;
                 default:
@@ -141,7 +141,7 @@ namespace PLAgent
             }
             else
             {
-                Log.Debug("enter HangupReason2Chinese .hangupReason:" + hangupReason);
+                //Log.Debug("enter HangupReason2Chinese .hangupReason:" + hangupReason);
                 string text = hangupReason.ToUpper();
                 string strReason;
                 if (text != null)

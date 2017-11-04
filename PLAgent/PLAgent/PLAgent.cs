@@ -3,6 +3,7 @@ using log4net.Config;
 using PLAgentDll;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
@@ -19,7 +20,6 @@ namespace PLAgent
     public class PLAgent:IDisposable
     {
         public delegate void AgentBarEventDelegate(string jsonArgsStr);
-
 
         public delegate void JsonEventHandler(string jsonArgsStr);
 
@@ -153,8 +153,6 @@ namespace PLAgent
 
         public delegate void ReceiveHeartBeatEventHandler(AgentEvent agent_event);
 
-        private delegate void DelegateUpdateUI(Event_Type eventType, string info);
-
         private delegate void SocketDisconnectEventHandler();
 
         public delegate void ForceChangeStatusEventHandler(string agentID, string reason, int retCode);
@@ -218,7 +216,7 @@ namespace PLAgent
 
         private const int E_NOINTERFACE = -2147467262;
 
-        
+        private SoundPlayer sndPlayer;
 
         private IntPtr h = IntPtr.Zero;
 
@@ -328,8 +326,6 @@ namespace PLAgent
 
         private int mSigninIntervalAfterSoftPhoneRegisted = 3000;
 
-        private bool mSipPhoneOnLineWarning = false;
-
         public bool bindSoftPhoneLogin;
 
         private Dictionary<string, string> mGroupMap;
@@ -426,9 +422,9 @@ namespace PLAgent
 
         private static object thislock = new object();
 
-        private string ringFileName = Application.StartupPath + "/sound/Ringback.wav";
+        private string ringFileName = Assembly.GetExecutingAssembly().Location + "/sound/Ringback.wav";
 
-        private string hangupRingFileName = Application.StartupPath + "/sound/dududu.wav";
+        private string hangupRingFileName = Assembly.GetExecutingAssembly().Location + "/sound/dududu.wav";
 
         private bool CallSuccess = false;
 
@@ -451,203 +447,204 @@ namespace PLAgent
         private bool _fSafeForScripting = true;
 
         private bool _fSafeForInitializing = true;
+        private ProcessStartInfo process_info;
 
-        public event AgentBar.InternalCallerRingEventHandler InternalCallerRingEvent;
+        public event InternalCallerRingEventHandler InternalCallerRingEvent;
 
-        public event AgentBar.AgentBarUIChangedEventHandler AgentBarUIChangedEvent;
+        public event  AgentBarUIChangedEventHandler AgentBarUIChangedEvent;
 
-        public event AgentBar.CallInEventHandler CallInEvent;
+        public event  CallInEventHandler CallInEvent;
 
-        public event AgentBar.PredictCallOutBridgeRingEventHandler PredictCallOutBridgeRingEvent;
+        public event  PredictCallOutBridgeRingEventHandler PredictCallOutBridgeRingEvent;
 
-        public event AgentBar.Consult_CallInEventHandler ConsultCallInEvent;
+        public event  Consult_CallInEventHandler ConsultCallInEvent;
 
-        public event AgentBar.Transfer_Blind_CallInEventHandler TransferBlindCallInEvent;
+        public event  Transfer_Blind_CallInEventHandler TransferBlindCallInEvent;
 
-        public event AgentBar.ThreeWayCallRingEventHandler ThreeWayCallRingEvent;
+        public event  ThreeWayCallRingEventHandler ThreeWayCallRingEvent;
 
-        public event AgentBar.EavesdropCallRingEventHandler EavesdropCallRingEvent;
-        public event AgentBar.WhisperCallRingEventHandler WhisperCallRingEvent;
+        public event  EavesdropCallRingEventHandler EavesdropCallRingEvent;
+        public event  WhisperCallRingEventHandler WhisperCallRingEvent;
 
-        public event AgentBar.BargeinCallRingEventHandler BargeinCallRingEvent;
+        public event  BargeinCallRingEventHandler BargeinCallRingEvent;
 
-        public event AgentBar.ForceHangupCallRingEventHandler ForceHangupCallRingEvent;
+        public event  ForceHangupCallRingEventHandler ForceHangupCallRingEvent;
 
-        public event AgentBar.EavesdropEventHandler EavesdropEvent;
+        public event  EavesdropEventHandler EavesdropEvent;
 
-        public event AgentBar.WhisperEventHandler WhisperEvent;
+        public event  WhisperEventHandler WhisperEvent;
 
-        public event AgentBar.BargeinEventHandler BargeinEvent;
+        public event  BargeinEventHandler BargeinEvent;
 
-        public event AgentBar.ForceHangupEventHandler ForceHangupEvent;
+        public event  ForceHangupEventHandler ForceHangupEvent;
 
-        public event AgentBar.InternalCall_CallInEventHandler InternalCall_CallInEvent;
+        public event  InternalCall_CallInEventHandler InternalCall_CallInEvent;
 
-        public event AgentBar.UserStateEventHandler UserStateChangeEvent;
+        public event  UserStateEventHandler UserStateChangeEvent;
 
-        public event AgentBar.AgentStatusChangeEventHandler AgentStatusChangeEvent;
+        public event  AgentStatusChangeEventHandler AgentStatusChangeEvent;
 
-        public event AgentBar.ResponseEventHandler ResponseEvent;
+        public event  ResponseEventHandler ResponseEvent;
 
-        public event AgentBar.GetOnlineAgentEventHandler GetAgentOnlineEvent;
+        public event  GetOnlineAgentEventHandler GetAgentOnlineEvent;
 
-        public event AgentBar.JsonEventHandler JSGetAgentOnlineEvent;
+        public event  JsonEventHandler JSGetAgentOnlineEvent;
 
-        public event AgentBar.GetAccessNumberEventHandler GetAccessNumberEvent;
+        public event  GetAccessNumberEventHandler GetAccessNumberEvent;
 
-        public event AgentBar.JsonEventHandler JSGetAccessNumberEvent;
+        public event  JsonEventHandler JSGetAccessNumberEvent;
 
-        public event AgentBar.GetIvrListEventHandler GetIvrListEvent;
+        public event  GetIvrListEventHandler GetIvrListEvent;
 
-        public event AgentBar.JsonEventHandler JSGetIvrListEvent;
+        public event  JsonEventHandler JSGetIvrListEvent;
 
-        public event AgentBar.GetQueueListEventHandler GetQueueListEvent;
+        public event  GetQueueListEventHandler GetQueueListEvent;
 
-        public event AgentBar.JsonEventHandler JSGetQueueListEvent;
+        public event  JsonEventHandler JSGetQueueListEvent;
 
-        public event AgentBar.GetIvrProfileListEventHandler GetIvrProfileListEvent;
+        public event  GetIvrProfileListEventHandler GetIvrProfileListEvent;
 
-        public event AgentBar.JsonEventHandler JSGetIvrProfileListEvent;
+        public event  JsonEventHandler JSGetIvrProfileListEvent;
 
-        public event AgentBar.GetAgentGroupListEventHandler GetAgentGroupListEvent;
+        public event  GetAgentGroupListEventHandler GetAgentGroupListEvent;
 
-        public event AgentBar.JsonEventHandler JSGetAgentGroupListEvent;
+        public event  JsonEventHandler JSGetAgentGroupListEvent;
 
-        public event AgentBar.GetAllAgentGroupListEventHandler GetAllAgentGroupListEvent;
+        public event  GetAllAgentGroupListEventHandler GetAllAgentGroupListEvent;
 
-        public event AgentBar.JsonEventHandler JSGetAllAgentGroupListEvent;
+        public event  JsonEventHandler JSGetAllAgentGroupListEvent;
 
-        public event AgentBar.GetAgentsOfQueueEventHandler GetAgentsOfQueueEvent;
+        public event  GetAgentsOfQueueEventHandler GetAgentsOfQueueEvent;
 
-        public event AgentBar.GetAgentsOfAgentGroupEventHandler GetAgentsOfAgentGroupEvent;
+        public event  GetAgentsOfAgentGroupEventHandler GetAgentsOfAgentGroupEvent;
 
-        public event AgentBar.GetAgentsMonitorInfoEventHandler GetAgentsMonitorInfoEvent;
+        public event  GetAgentsMonitorInfoEventHandler GetAgentsMonitorInfoEvent;
 
-        public event AgentBar.JsonEventHandler JSGetAgentsMonitorInfoEvent;
+        public event  JsonEventHandler JSGetAgentsMonitorInfoEvent;
 
-        public event AgentBar.GetDetailCallInfoEventHandler GetDetailCallInfoEvent;
+        public event  GetDetailCallInfoEventHandler GetDetailCallInfoEvent;
 
-        public event AgentBar.JsonEventHandler JSGetDetailCallInfoEvent;
+        public event  JsonEventHandler JSGetDetailCallInfoEvent;
 
-        public event AgentBar.GetCustomerOfQueueEventHandler GetCustomerOfQueueEvent;
+        public event  GetCustomerOfQueueEventHandler GetCustomerOfQueueEvent;
 
-        public event AgentBar.JsonEventHandler JSGetCustomerOfQueueEvent;
+        public event  JsonEventHandler JSGetCustomerOfQueueEvent;
 
-        public event AgentBar.GetCustomerOfMyQueueEventHandler GetCustomerOfMyQueueEvent;
+        public event  GetCustomerOfMyQueueEventHandler GetCustomerOfMyQueueEvent;
 
-        public event AgentBar.JsonEventHandler JSGetCustomerOfMyQueueEvent;
+        public event  JsonEventHandler JSGetCustomerOfMyQueueEvent;
 
-        public event AgentBar.GetQueueStatisLstEventHandler GetQueueStatisLstEvent;
+        public event  GetQueueStatisLstEventHandler GetQueueStatisLstEvent;
 
-        public event AgentBar.JsonEventHandler JSGetQueueStatisLstEvent;
+        public event  JsonEventHandler JSGetQueueStatisLstEvent;
 
-        public event AgentBar.GetAllQueueStatisEventHandler GetAllQueueStatisEvent;
+        public event  GetAllQueueStatisEventHandler GetAllQueueStatisEvent;
 
-        public event AgentBar.JsonEventHandler JSGetAllQueueStatisEvent;
+        public event  JsonEventHandler JSGetAllQueueStatisEvent;
 
-        public event AgentBar.AddCustomerToQueueEventHandler AddCustomerToQueueEvent;
+        public event  AddCustomerToQueueEventHandler AddCustomerToQueueEvent;
 
-        public event AgentBar.UpdateCustomerOfQueueEventHandler UpdateCustomerOfQueueEvent;
+        public event  UpdateCustomerOfQueueEventHandler UpdateCustomerOfQueueEvent;
 
-        public event AgentBar.DelCustomerFromQueueEventHandler DelCustomerFromQueueEvent;
+        public event  DelCustomerFromQueueEventHandler DelCustomerFromQueueEvent;
 
-        public event AgentBar.ThreeWayeeHangupEventHandler ThreeWayeeHangupEvent;
+        public event  ThreeWayeeHangupEventHandler ThreeWayeeHangupEvent;
 
-        public event AgentBar.WarnAgentResigninEventHandler WarnAgentResigninEvent;
+        public event  WarnAgentResigninEventHandler WarnAgentResigninEvent;
 
-        public event AgentBar.WarnAgentForceChangeStatusEventHandler WarnAgentForceChangeStatusEvent;
+        public event  WarnAgentForceChangeStatusEventHandler WarnAgentForceChangeStatusEvent;
 
-        public event AgentBar.ConsulteeHangupEventHandler ConsulteeHangupEvent;
+        public event  ConsulteeHangupEventHandler ConsulteeHangupEvent;
 
-        public event AgentBar.EventResultEventHandler EventResultEvent;
+        public event  EventResultEventHandler EventResultEvent;
 
-        public event AgentBar.SignInRingEventHandler SignInRingEvent;
+        public event  SignInRingEventHandler SignInRingEvent;
 
-        public event AgentBar.SignInPlayEventHandler SignInPlayEvent;
+        public event  SignInPlayEventHandler SignInPlayEvent;
 
-        public event AgentBar.CallOutRingEventHandler CallOutRingEvent;
+        public event  CallOutRingEventHandler CallOutRingEvent;
 
-        public event AgentBar.HoldEventHandler HoldEvent;
+        public event  HoldEventHandler HoldEvent;
 
-        public event AgentBar.SockDisconnectEventHandler SockDisconnectEvent;
+        public event  SockDisconnectEventHandler SockDisconnectEvent;
 
-        public event AgentBar.ResponseTimeOutEventHandler ResponseTimeOutEvent;
+        public event  ResponseTimeOutEventHandler ResponseTimeOutEvent;
 
-        public event AgentBar.SysThrowExceptionEventHandler SysThrowExceptionEvent;
+        public event  SysThrowExceptionEventHandler SysThrowExceptionEvent;
 
-        public event AgentBar.CheckExtenEventHandler CheckExtenEvent;
+        public event  CheckExtenEventHandler CheckExtenEvent;
 
-        public event AgentBar.SignInEventHandler SignInEvent;
+        public event  SignInEventHandler SignInEvent;
 
-        public event AgentBar.HangupEventHandler HangupEvent;
+        public event  HangupEventHandler HangupEvent;
 
-        public event AgentBar.SignOutEventHandler SignOutEvent;
+        public event  SignOutEventHandler SignOutEvent;
 
-        public event AgentBar.GetWebSiteInfoEventHandler GetWebSiteInfoEvent;
+        public event  GetWebSiteInfoEventHandler GetWebSiteInfoEvent;
 
-        public event AgentBar.JsonEventHandler JSGetWebSiteInfoEvent;
+        public event  JsonEventHandler JSGetWebSiteInfoEvent;
 
-        public event AgentBar.KickOutEventHandler KickOutEvent;
+        public event  KickOutEventHandler KickOutEvent;
 
-        public event AgentBar.ServerResponseEventHandler ServerResponse;
+        public event  ServerResponseEventHandler ServerResponse;
 
-        public event AgentBar.SignInResponseEventHandler SignInResponse;
+        public event  SignInResponseEventHandler SignInResponse;
 
-        public event AgentBar.SignOutResponseEventHandler SignOutResponse;
+        public event  SignOutResponseEventHandler SignOutResponse;
 
-        public event AgentBar.AnswerEventHandler AnswerEvent;
+        public event  AnswerEventHandler AnswerEvent;
 
-        public event AgentBar.CalleeAnswerEventHandler CalleeAnswerEvent;
+        public event  CalleeAnswerEventHandler CalleeAnswerEvent;
 
-        public event AgentBar.BridgeEventHandler BridgeEvent;
+        public event  BridgeEventHandler BridgeEvent;
 
-        public event AgentBar.GetRoleNameEventHandler GetRoleNameEvent;
+        public event  GetRoleNameEventHandler GetRoleNameEvent;
 
-        public event AgentBar.SendAgentStatusEventHandler SendAgentStatusEvent;
+        public event  SendAgentStatusEventHandler SendAgentStatusEvent;
 
-        public event AgentBar.ForceChangeStatusEventHandler ForceChangeStatusEvent;
+        public event  ForceChangeStatusEventHandler ForceChangeStatusEvent;
 
-        public event AgentBar.GetAgentPersonalInfoEventHandler GetAgentPersonalInfoEvent;
+        public event  GetAgentPersonalInfoEventHandler GetAgentPersonalInfoEvent;
 
-        public event AgentBar.SetAgentPersonalInfoEventHandler SetAgentPersonalInfoEvent;
+        public event  SetAgentPersonalInfoEventHandler SetAgentPersonalInfoEvent;
 
-        public event AgentBar.ChangePswdEventHandler ChangePswdEvent;
+        public event  ChangePswdEventHandler ChangePswdEvent;
 
-        public event AgentBar.GetReportStatisInfoEventHandler GetReportStatisInfoEvent;
+        public event  GetReportStatisInfoEventHandler GetReportStatisInfoEvent;
 
-        public event AgentBar.JsonEventHandler JSGetReportStatisInfoEvent;
+        public event  JsonEventHandler JSGetReportStatisInfoEvent;
 
-        public event AgentBar.ApplyChangeStatusEventHandler ApplyChangeStatusEvent;
+        public event  ApplyChangeStatusEventHandler ApplyChangeStatusEvent;
 
-        public event AgentBar.ApplyChangeStatusCancelEventHandler ApplyChangeStatusCancelEvent;
+        public event  ApplyChangeStatusCancelEventHandler ApplyChangeStatusCancelEvent;
 
-        public event AgentBar.ApplyChangeStatusDistributeEventHandler ApplyChangeStatusDistributeEvent;
+        public event  ApplyChangeStatusDistributeEventHandler ApplyChangeStatusDistributeEvent;
 
-        public event AgentBar.ApproveChangeStatusDistributeEventHandler ApproveChangeStatusDistributeEvent;
+        public event  ApproveChangeStatusDistributeEventHandler ApproveChangeStatusDistributeEvent;
 
-        public event AgentBar.ApproveChangeStatusTimeoutEventDistributeHandler ApproveChangeStatusTimeoutDistributeEvent;
+        public event  ApproveChangeStatusTimeoutEventDistributeHandler ApproveChangeStatusTimeoutDistributeEvent;
 
-        public event AgentBar.GetAgentGroupStatusMaxNumEventHandler GetAgentGroupStatusMaxNumEvent;
+        public event  GetAgentGroupStatusMaxNumEventHandler GetAgentGroupStatusMaxNumEvent;
 
-        public event AgentBar.JsonEventHandler JSGetAgentGroupStatusMaxNumEvent;
+        public event  JsonEventHandler JSGetAgentGroupStatusMaxNumEvent;
 
-        public event AgentBar.GetChangeStatusApplyListEventHandler GetChangeStatusApplyListEvent;
+        public event  GetChangeStatusApplyListEventHandler GetChangeStatusApplyListEvent;
 
-        public event AgentBar.JsonEventHandler JSGetChangeStatusApplyListEvent;
+        public event  JsonEventHandler JSGetChangeStatusApplyListEvent;
 
-        public event AgentBar.QueueTransferBoundEventHandler QueueTransferBoundEvent;
+        public event  QueueTransferBoundEventHandler QueueTransferBoundEvent;
 
-        public event AgentBar.Record_StartEventHandler RecordStart;
+        public event  Record_StartEventHandler RecordStart;
 
-        public event AgentBar.Record_StopEventHandler RecordStop;
+        public event  Record_StopEventHandler RecordStop;
 
-        public event AgentBar.Cust_Evaluate_Result_Handle Cust_Evaluate_Result;
+        public event  Cust_Evaluate_Result_Handle Cust_Evaluate_Result;
 
-        public event AgentBar.AllGetwaysFullEventHandler AllGetwaysFullEvent;
+        public event  AllGetwaysFullEventHandler AllGetwaysFullEvent;
 
-        public event AgentBar.NoAnswerCallAlarmlEventHandler NoAnswerCallAlarmlEvent;
+        public event  NoAnswerCallAlarmlEventHandler NoAnswerCallAlarmlEvent;
 
-        public event AgentBar.transferControlsVisibleHandler transferControlsVisible;
+        public event  transferControlsVisibleHandler transferControlsVisible;
 
 
         public IntPtr SoftPhoneWindowHandle
@@ -922,7 +919,12 @@ namespace PLAgent
         {
             get
             {
-                return AgentBar.Str2AgentStatus(this.mAgentStatus) == AgentBar.Agent_Status.AGENT_STATUS_HOLD || AgentBar.Str2AgentStatus(this.mAgentStatus) == AgentBar.Agent_Status.AGENT_STATUS_MUTE || AgentBar.Str2AgentStatus(this.mAgentStatus) == AgentBar.Agent_Status.AGENT_STATUS_CALLING_OUT || AgentBar.Str2AgentStatus(this.mAgentStatus) == AgentBar.Agent_Status.AGENT_STATUS_TALKING || AgentBar.Str2AgentStatus(this.mAgentStatus) == AgentBar.Agent_Status.AGENT_STATUS_RING || AgentBar.Str2AgentStatus(this.mAgentStatus) == AgentBar.Agent_Status.AGENT_STATUS_CAMP_ON;
+                return  Utils.Str2AgentStatus(this.mAgentStatus) ==  Agent_Status.AGENT_STATUS_HOLD ||  
+                    Utils.Str2AgentStatus(this.mAgentStatus) ==  Agent_Status.AGENT_STATUS_MUTE ||  
+                    Utils.Str2AgentStatus(this.mAgentStatus) ==  Agent_Status.AGENT_STATUS_CALLING_OUT ||  
+                    Utils.Str2AgentStatus(this.mAgentStatus) ==  Agent_Status.AGENT_STATUS_TALKING ||  
+                    Utils.Str2AgentStatus(this.mAgentStatus) ==  Agent_Status.AGENT_STATUS_RING ||  
+                    Utils.Str2AgentStatus(this.mAgentStatus) ==  Agent_Status.AGENT_STATUS_CAMP_ON;
             }
         }
 
@@ -930,7 +932,9 @@ namespace PLAgent
         {
             get
             {
-                return AgentBar.Str2AgentStatus(this.mAgentStatus) == AgentBar.Agent_Status.AGENT_STATUS_HOLD || AgentBar.Str2AgentStatus(this.mAgentStatus) == AgentBar.Agent_Status.AGENT_STATUS_MUTE || AgentBar.Str2AgentStatus(this.mAgentStatus) == AgentBar.Agent_Status.AGENT_STATUS_TALKING;
+                return Utils.Str2AgentStatus(this.mAgentStatus) ==  Agent_Status.AGENT_STATUS_HOLD || 
+                    Utils.Str2AgentStatus(this.mAgentStatus) ==  Agent_Status.AGENT_STATUS_MUTE || 
+                    Utils.Str2AgentStatus(this.mAgentStatus) ==  Agent_Status.AGENT_STATUS_TALKING;
             }
         }
 
@@ -1486,18 +1490,6 @@ namespace PLAgent
             }
         }
 
-        public bool SipPhoneOnLineWarning
-        {
-            get
-            {
-                return this.mSipPhoneOnLineWarning;
-            }
-            set
-            {
-                this.mSipPhoneOnLineWarning = value;
-            }
-        }
-
         public string NoAnswerCallsURL
         {
             get
@@ -1518,7 +1510,7 @@ namespace PLAgent
             }
         }
 
-        protected override void Dispose()
+        public void Dispose()
         {
             if (this.agentDll != null)
             {
@@ -1541,9 +1533,6 @@ namespace PLAgent
         {
             myDelegate(jsonArgsStr);
         }
-
-       
-        
 
         private string HangupFailReason2Chinese(string hangupFailedReason)
         {
@@ -1714,18 +1703,17 @@ namespace PLAgent
             this.agentDll = new AgentDll();
             this.agentDll.AgentEvents += new AgentDll.EVT_AgentDelegate(this.ReceiveAgentEvents);
             this.agentDll.AgentHeartbeatEvents += new AgentDll.HeartBeatEVT_AgentDelegate(this.ReceiveAgentHeartBeatEvents);
-            this.UserStateChangeEvent += this.OnUserStateChange; //(AgentBar.UserStateEventHandler)Delegate.Combine(this.UserStateChangeEvent, new AgentBar.UserStateEventHandler(this.OnUserStateChange));
-            this.ResponseEvent += this.OnResponse; //(AgentBar.ResponseEventHandler)Delegate.Combine(this.ResponseEvent, new AgentBar.ResponseEventHandler(this.OnResponse));
-            this.EventResultEvent += this.OnEventResultEvent;// (AgentBar.EventResultEventHandler)Delegate.Combine(this.EventResultEvent, new AgentBar.EventResultEventHandler(this.OnEventResultEvent));
-            this.SockDisconnectEvent += this.OnSockDisconnectEvent; //(AgentBar.SockDisconnectEventHandler)Delegate.Combine(this.SockDisconnectEvent, new AgentBar.SockDisconnectEventHandler(this.OnSockDisconnectEvent));
-            this.ResponseTimeOutEvent += this.OnResponseTimeOutEvent;// (AgentBar.ResponseTimeOutEventHandler)Delegate.Combine(this.ResponseTimeOutEvent, new AgentBar.ResponseTimeOutEventHandler(this.OnResponseTimeOutEvent));
-            this.SignOutEvent += this.OnSignOutEvent;// (AgentBar.SignOutEventHandler)Delegate.Combine(this.SignOutEvent, new AgentBar.SignOutEventHandler(this.OnSignOutEvent));
+            //this.UserStateChangeEvent += this.OnUserStateChange; 
+            this.ResponseEvent += this.OnResponse; 
+            this.EventResultEvent += this.OnEventResultEvent;
+            //this.SockDisconnectEvent += this.OnSockDisconnectEvent; 
+            //this.ResponseTimeOutEvent += this.OnResponseTimeOutEvent;
+            this.SignOutEvent += this.OnSignOutEvent;
             this.mGroupMap = new Dictionary<string, string>();
             this.mRoleMap = new Dictionary<string, string>();
             this.apply_change_status_approval_history = new List<Apply_Change_Status>();
             this.apply_change_status_to_approval_lst = new List<Apply_Change_Status>();
             this.sndPlayer = new SoundPlayer();
-            this.initAgentTool();
             this.mCalloutHistory = new List<string>();
             this.initMyApplyChangeStatus();
             this.mSipAutoSignIn = false;
@@ -1810,10 +1798,9 @@ namespace PLAgent
                 {
                     strAutoAnswer = "1";
                 }
-                if (!AgentBar.write_conf_to_softphone(cfgFileName, "autoanswer", strAutoAnswer))
+                if (! write_conf_to_softphone(cfgFileName, "autoanswer", strAutoAnswer))
                 {
-                    MessageBox.Show("保存文件失败！", "保存失败", MessageBoxButtons.OK, MessageBoxIcon.Asterisk);
-                    AgentBar.Log.Warn("write_conf_to_softphone 执行失败!");
+                    Log.Warn("write_conf_to_softphone 执行失败!");
                     result = -1;
                 }
                 else
@@ -1823,7 +1810,7 @@ namespace PLAgent
             }
             else
             {
-                AgentBar.Log.Warn("配置文件不存在！" + cfgFileName);
+                 Log.Warn("配置文件不存在！" + cfgFileName);
                 result = -2;
             }
             return result;
@@ -1835,10 +1822,9 @@ namespace PLAgent
             int result;
             if (File.Exists(cfgFileName))
             {
-                if (!AgentBar.write_conf_to_softphone(cfgFileName, "registtime", registTime.ToString()))
+                if (! write_conf_to_softphone(cfgFileName, "registtime", registTime.ToString()))
                 {
-                    MessageBox.Show("保存文件失败！", "保存失败", MessageBoxButtons.OK, MessageBoxIcon.Asterisk);
-                    AgentBar.Log.Warn("write_conf_to_softphone 执行失败!");
+                    Log.Warn("write_conf_to_softphone 执行失败!");
                     result = -1;
                 }
                 else
@@ -1848,7 +1834,7 @@ namespace PLAgent
             }
             else
             {
-                AgentBar.Log.Warn("配置文件不存在！" + cfgFileName);
+                 Log.Warn("配置文件不存在！" + cfgFileName);
                 result = -2;
             }
             return result;
@@ -1912,41 +1898,6 @@ namespace PLAgent
             string customer_num_phone_type, string predictCustomerForeignId, 
             string predictCustomerName, string predictCustomerRemark)
         {
-            Log.Debug(string.Concat(new string[]
-            {
-                "enter OnEvent_CommonCallIn.agentID:",
-                agentID,
-                ",agent_call_uuid:",
-                agent_call_uuid,
-                ",callerID",
-                callerID,
-                ",calledID:",
-                calledID,
-                ",accessNumName:",
-                accessNumName,
-                ",makeStr:",
-                makeStr,
-                ",callType:",
-                callType,
-                ",relation_uuid:",
-                relation_uuid,
-                ",areaID:",
-                areaID,
-                ",areaName:",
-                areaName,
-                ",custGrade:",
-                custGrade,
-                ",outExtraParamsFromIvr:",
-                outExtraParamsFromIvr,
-                ",todayDate:",
-                todayDate,
-                ",predictCustomerForeignId:",
-                predictCustomerForeignId,
-                ",predictCustomerName:",
-                predictCustomerName,
-                ",predictCustomerRemark:",
-                predictCustomerRemark
-            }));
             this.mCallType = Call_Type.COMMON_CALL_IN;
             this.mCallStatus = CallStatus.CALL_IN;
             this.m_agent_current_call_uuid = agent_call_uuid;
@@ -2014,7 +1965,6 @@ namespace PLAgent
             }));
             this.mCallType = Call_Type.PREDICT_CALL_OUT;
             this.mCallStatus = CallStatus.CALL_OUT;
-            this.update_Toolbar_UI(Event_Type.CALLIN_PREDICT_CALL, "");
             if (this.PredictCallOutBridgeRingEvent != null)
             {
                 makeStr = string.Concat(new string[]
@@ -2040,23 +1990,11 @@ namespace PLAgent
 
         private void OnEvent_Internal_Call_CallIn(string agentID, string agent_call_uuid, string calledID, string callType, string relation_uuid)
         {
-            Log.Debug(string.Concat(new string[]
-            {
-                "enter OnEvent_Internal_Call_CallIn. agentID",
-                agentID,
-                ",agent_call_uuid:",
-                agent_call_uuid,
-                ",calledID:",
-                calledID,
-                ",callType:",
-                callType,
-                ",relation_uuid:",
-                relation_uuid
-            }));
+            
             this.mCallType = Call_Type.AGENT_INTERNAL_CALL;
             this.mCallStatus = CallStatus.CALL_IN;
             this.m_agent_current_call_uuid = agent_call_uuid;
-            this.update_Toolbar_UI(Event_Type.CALLIN_INTERNAL_MYSELF, "内部呼叫");
+
             string makeStr = string.Empty;
             makeStr = string.Concat(new string[]
             {
@@ -2066,84 +2004,6 @@ namespace PLAgent
                 relation_uuid,
                 "#"
             });
-        }
-
-        private void OnEvent_Consult(string agentID, int retCode, string reason)
-        {
-            Log.Debug(string.Concat(new object[]
-            {
-                "enter OnEvent_Consult. agentID",
-                agentID,
-                ",retCode:",
-                retCode,
-                ",reason:",
-                reason
-            }));
-            if (retCode == 0)
-            {
-                this.update_Toolbar_UI(Event_Type.CONSULT_SUCCESS, "");
-            }
-            else
-            {
-                Log.Debug("OnEvent_Consult has error!reason=" + reason);
-                this.update_Toolbar_UI(Event_Type.CONSULT_FAIL, "");
-            }
-            this.Consultcheck = false;
-        }
-
-        private void OnEvent_hold_Result(string agentID, int retCode, string reason)
-        {
-            Log.Debug(string.Concat(new object[]
-            {
-                "enter OnEvent_hold_Result .agentID:",
-                agentID,
-                ",retCode:",
-                retCode,
-                ",reason:",
-                reason
-            }));
-        }
-
-        private void OnEvent_Unhold_Result(string agentID, int retCode, string reason)
-        {
-            Log.Debug(string.Concat(new object[]
-            {
-                "enter OnEvent_Unhold_Result .agentID:",
-                agentID,
-                ",retCode:",
-                retCode,
-                ",reason:",
-                reason
-            }));
-            
-        }
-
-        private void OnEvent_Mute_Result(string agentID, int retCode, string reason)
-        {
-            Log.Debug(string.Concat(new object[]
-            {
-                "enter OnEvent_mute_Result .agentID:",
-                agentID,
-                ",retCode:",
-                retCode,
-                ",reason:",
-                reason
-            }));
-        }
-
-        private void OnEvent_Unmute_Result(string agentID, int retCode, string reason)
-        {
-            
-        }
-
-        private void OnEvent_Consult_Cancel(string agentID, int retCode, string reason)
-        {
-            
-        }
-
-        private void OnEvent_Consult_Transfer(string agentID, int retCode, string reason)
-        {
-            
         }
 
         private void OnEvent_Consult_Callin(string agentID, string agent_call_uuid, 
@@ -2193,51 +2053,7 @@ namespace PLAgent
 
         private void OnEvent_Transfer_Blind_Call_In(string agentID, string agent_call_uuid, string callerID, string calledID, string accessNumName, string callerAgentNum, string callType, string areaID, string areaName, string cust_grade, string outExtraParamsFromIvr, string todayDate, string customer_num_format_local, string customer_num_format_national, string customer_num_format_e164, string customer_num_phone_type, string customerForeignId, string predictCustomerForeignId, string predictCustomerName, string predictCustomerRemark, string relation_uuid)
         {
-            Log.Debug(string.Concat(new string[]
-            {
-                "enter OnEvent_Transfer_Blind_Call_In.agentID:",
-                agentID,
-                ",agent_call_uuid:",
-                agent_call_uuid,
-                ",callerID",
-                callerID,
-                ",calledID:",
-                calledID,
-                ",accessNumName:",
-                accessNumName,
-                ",callerAgentNum:",
-                callerAgentNum,
-                ",callType:",
-                callType,
-                ",areaID:",
-                areaID,
-                ",areaName:",
-                areaName,
-                ",cust_grade:",
-                cust_grade,
-                ",outExtraParamsFromIvr:",
-                outExtraParamsFromIvr,
-                ",todayDate:",
-                todayDate,
-                ",customer_num_format_local:",
-                customer_num_format_local,
-                ",customer_num_format_national:",
-                customer_num_format_national,
-                ",customer_num_format_e164:",
-                customer_num_format_e164,
-                ",customer_num_phone_type:",
-                customer_num_phone_type,
-                ",customerForeignId:",
-                customerForeignId,
-                ",predictCustomerForeignId:",
-                predictCustomerForeignId,
-                ",predictCustomerName:",
-                predictCustomerName,
-                ",predictCustomerRemark:",
-                predictCustomerRemark,
-                ",relation_uuid:",
-                relation_uuid
-            }));
+            
             this.mCallType = Call_Type.COMMON_CALL_IN;
             this.mCallStatus = CallStatus.CALL_IN;
             this.m_agent_current_call_uuid = agent_call_uuid;
@@ -2275,109 +2091,6 @@ namespace PLAgent
             }
         }
 
-        private void OnEvent_Transfer_Agent(string agentID, int retCode, string reason)
-        {
-            Log.Debug(string.Concat(new object[]
-            {
-                "enter OnEvent_Transfer_Agent.agentID:",
-                agentID,
-                ",retCode:",
-                retCode,
-                ",reason:",
-                reason
-            }));
-            
-            this.transfercheck = false;
-        }
-
-        private void OnEvent_Transfer_Ivr(string agentID, int retCode, string reason)
-        {
-            Log.Debug(string.Concat(new object[]
-            {
-                "enter OnEvent_Transfer_Ivr.agentID:",
-                agentID,
-                ",retCode:",
-                retCode,
-                ",reason:",
-                reason
-            }));
-            
-        }
-
-        private void OnEvent_Transfer_Queue(string agentID, int retCode, string reason)
-        {
-            Log.Debug(string.Concat(new object[]
-            {
-                "enter OnEvent_Transfer_Queue.agentID:",
-                agentID,
-                ",retCode:",
-                retCode,
-                ",reason:",
-                reason
-            }));
-            
-        }
-
-        private void OnEvent_Transfer_Ivr_Profile(string agentID, int retCode, string reason)
-        {
-            Log.Debug(string.Concat(new object[]
-            {
-                "enter OnEvent_Transfer_Ivr_Profile.agentID:",
-                agentID,
-                ",retCode:",
-                retCode,
-                ",reason:",
-                reason
-            }));
-            
-        }
-
-        private void OnEvent_Get_Access_Number(string agentID, string reason, int retCode, string[] accessNumbers)
-        {
-            Log.Debug(string.Concat(new object[]
-            {
-                "enter OnEvent_Get_Access_Number.agentID:",
-                agentID,
-                ",reason:",
-                reason,
-                ",retCode:",
-                retCode
-            }));
-            if (retCode == 0)
-            {
-                if (this.GetAccessNumberEvent != null)
-                {
-                    this.GetAccessNumberEvent(accessNumbers, this.mDefaultAccessNum, this.mCalloutHistory);
-                }
-                if (this.JSGetAccessNumberEvent != null)
-                {
-                    string[] strArgsLst = new string[]
-                    {
-                        "accessNumbers",
-                        "mDefaultAccessNum",
-                        "mCalloutHistory"
-                    };
-                    this.ProcessAgentBarJsonDelegate(new object[]
-                    {
-                        this.JSGetAccessNumberEvent,
-                        strArgsLst,
-                        accessNumbers,
-                        this.mDefaultAccessNum,
-                        this.mCalloutHistory
-                    });
-                }
-            }
-        }
-
-        private void OnEvent_Three_Way_Call(string agentID, string reason, int retCode)
-        {
-            
-        }
-
-        private void OnEvent_Three_Way_Cancel(string agentID, string reason, int retCode)
-        {
-            
-        }
 
         private void OnEvent_Three_Way_Call_In(string agentID, string agent_call_uuid, string callerID, string calledID, string accessNumName, string callerAgentNum, string callType, string areaID, string areaName, string custGrade, string outExtraParamsFromIvr, string todayDate, string customer_num_format_local, string customer_num_format_national, string customer_num_format_e164, string customer_num_phone_type, string customerForeignId, string predictCustomerForeignId, string predictCustomerName, string predictCustomerRemark, string relation_uuid)
         {
@@ -2451,11 +2164,10 @@ namespace PLAgent
         private void OnEvent_Eavesdrop_Ring(string agentID, string agent_call_uuid, string callerID, string calledID, string accessNumName, string desAgentID, string callType, string areaID, string areaName, string custGrade, string outExtraParamsFromIvr, string todayDate, string customer_num_format_local, string customer_num_format_national, string customer_num_format_e164, string customer_num_phone_type, string customerForeignId, string relation_uuid)
         {
             
-            this.mCallType = AgentBar.Call_Type.EAVESDROP_CALL_IN;
-            this.mCallStatus = AgentBar.CallStatus.CALL_OUT;
+            this.mCallType =  Call_Type.EAVESDROP_CALL_IN;
+            this.mCallStatus =  CallStatus.CALL_OUT;
             this.mEavesdropAgent = desAgentID;
             this.m_agent_current_call_uuid = agent_call_uuid;
-            this.update_Toolbar_UI(AgentBar.Event_Type.EAVESDROP_RING_MYSELF, "");
             string makeStr = string.Empty;
             makeStr = string.Concat(new string[]
             {
@@ -2560,12 +2272,6 @@ namespace PLAgent
                     {
                         "agent_online"
                     };
-                    this.ProcessAgentBarJsonDelegate(new object[]
-                    {
-                        this.JSGetAgentOnlineEvent,
-                        strArgsLst,
-                        agent_online
-                    });
                 }
             }
             else
@@ -2589,12 +2295,6 @@ namespace PLAgent
                     {
                         "ivr_list"
                     };
-                    this.ProcessAgentBarJsonDelegate(new object[]
-                    {
-                        this.JSGetIvrListEvent,
-                        strArgsLst,
-                        ivr_list
-                    });
                 }
             }
             else
@@ -2617,12 +2317,6 @@ namespace PLAgent
                     {
                         "queue_list"
                     };
-                    this.ProcessAgentBarJsonDelegate(new object[]
-                    {
-                        this.JSGetQueueListEvent,
-                        strArgsLst,
-                        queue_list
-                    });
                 }
             }
         }
@@ -2641,12 +2335,7 @@ namespace PLAgent
                     {
                         "ivr_profile_list"
                     };
-                    this.ProcessAgentBarJsonDelegate(new object[]
-                    {
-                        this.JSGetIvrProfileListEvent,
-                        strArgsLst,
-                        ivr_profile_list
-                    });
+                    
                 }
             }
             else
@@ -2677,7 +2366,7 @@ namespace PLAgent
                         }
                     }
                 }
-                this.load_default_status();
+                //this.load_default_status();
             }
             else
             {
@@ -2702,12 +2391,12 @@ namespace PLAgent
                     {
                         "agent_group_list"
                     };
-                    this.ProcessAgentBarJsonDelegate(new object[]
-                    {
-                        this.JSGetAllAgentGroupListEvent,
-                        strArgsLst,
-                        agent_group_list
-                    });
+                    //this.ProcessAgentBarJsonDelegate(new object[]
+                    //{
+                    //    this.JSGetAllAgentGroupListEvent,
+                    //    strArgsLst,
+                    //    agent_group_list
+                    //});
                 }
                 if (this.mMyRoleAndRight.controled_agent_group_lst != null && !(this.mMyRoleAndRight.controled_agent_group_lst == ""))
                 {
@@ -2745,12 +2434,12 @@ namespace PLAgent
                         {
                             "new_agent_group_list"
                         };
-                        this.ProcessAgentBarJsonDelegate(new object[]
-                        {
-                            this.JSGetAgentGroupListEvent,
-                            strArgsLst,
-                            new_agent_group_list
-                        });
+                        //this.ProcessAgentBarJsonDelegate(new object[]
+                        //{
+                        //    this.JSGetAgentGroupListEvent,
+                        //    strArgsLst,
+                        //    new_agent_group_list
+                        //});
                     }
                 }
             }
@@ -2818,15 +2507,15 @@ namespace PLAgent
                         "mGroupMap",
                         "mRoleMap"
                     };
-                    this.ProcessAgentBarJsonDelegate(new object[]
-                    {
-                        this.JSGetAgentsMonitorInfoEvent,
-                        strArgsLst,
-                        agent_monitor_info,
-                        current_time,
-                        this.mGroupMap,
-                        this.mRoleMap
-                    });
+                    //this.ProcessAgentBarJsonDelegate(new object[]
+                    //{
+                    //    this.JSGetAgentsMonitorInfoEvent,
+                    //    strArgsLst,
+                    //    agent_monitor_info,
+                    //    current_time,
+                    //    this.mGroupMap,
+                    //    this.mRoleMap
+                    //});
                 }
             }
             else
@@ -2853,15 +2542,15 @@ namespace PLAgent
                         "leg_info",
                         "relation_info"
                     };
-                    this.ProcessAgentBarJsonDelegate(new object[]
-                    {
-                        this.JSGetDetailCallInfoEvent,
-                        strArgsLst,
-                        targetAgentNum,
-                        callType,
-                        leg_info,
-                        relation_info
-                    });
+                    //this.ProcessAgentBarJsonDelegate(new object[]
+                    //{
+                    //    this.JSGetDetailCallInfoEvent,
+                    //    strArgsLst,
+                    //    targetAgentNum,
+                    //    callType,
+                    //    leg_info,
+                    //    relation_info
+                    //});
                 }
             }
         }
@@ -2883,14 +2572,14 @@ namespace PLAgent
                         "current_time",
                         "customer_list"
                     };
-                    this.ProcessAgentBarJsonDelegate(new object[]
-                    {
-                        this.JSGetCustomerOfQueueEvent,
-                        strArgsLst,
-                        queueNumLstStr,
-                        current_time,
-                        customer_list
-                    });
+                    //this.ProcessAgentBarJsonDelegate(new object[]
+                    //{
+                    //    this.JSGetCustomerOfQueueEvent,
+                    //    strArgsLst,
+                    //    queueNumLstStr,
+                    //    current_time,
+                    //    customer_list
+                    //});
                 }
             }
             else
@@ -2916,14 +2605,14 @@ namespace PLAgent
                         "current_time",
                         "customer_list"
                     };
-                    this.ProcessAgentBarJsonDelegate(new object[]
-                    {
-                        this.JSGetCustomerOfMyQueueEvent,
-                        strArgsLst,
-                        queueNumLstStr,
-                        current_time,
-                        customer_list
-                    });
+                    //this.ProcessAgentBarJsonDelegate(new object[]
+                    //{
+                    //    this.JSGetCustomerOfMyQueueEvent,
+                    //    strArgsLst,
+                    //    queueNumLstStr,
+                    //    current_time,
+                    //    customer_list
+                    //});
                 }
             }
             else
@@ -2949,14 +2638,14 @@ namespace PLAgent
                         "current_time",
                         "queue_statis_list"
                     };
-                    this.ProcessAgentBarJsonDelegate(new object[]
-                    {
-                        this.JSGetQueueStatisLstEvent,
-                        strArgsLst,
-                        queueNumLstStr,
-                        current_time,
-                        queue_statis_list
-                    });
+                    //this.ProcessAgentBarJsonDelegate(new object[]
+                    //{
+                    //    this.JSGetQueueStatisLstEvent,
+                    //    strArgsLst,
+                    //    queueNumLstStr,
+                    //    current_time,
+                    //    queue_statis_list
+                    //});
                 }
             }
             else
@@ -2981,13 +2670,13 @@ namespace PLAgent
                         "current_time",
                         "queue_statis_list"
                     };
-                    this.ProcessAgentBarJsonDelegate(new object[]
-                    {
-                        this.JSGetAllQueueStatisEvent,
-                        strArgsLst,
-                        current_time,
-                        queue_statis_list
-                    });
+                    //this.ProcessAgentBarJsonDelegate(new object[]
+                    //{
+                    //    this.JSGetAllQueueStatisEvent,
+                    //    strArgsLst,
+                    //    current_time,
+                    //    queue_statis_list
+                    //});
                 }
             }
             else
@@ -3083,10 +2772,9 @@ namespace PLAgent
         private void OnEvent_Force_Hangup_Ring(string agentID, string agent_call_uuid, string callerID, string calledID, string accessNumName, string desAgentID, string callType, string areaID, string areaName, string custGrade, string outExtraParamsFromIvr, string todayDate, string customer_num_format_local, string customer_num_format_national, string customer_num_format_e164, string customer_num_phone_type, string customerForeignId, string relation_uuid)
         {
             
-            this.mCallType = AgentBar.Call_Type.COMMON_CALL_IN;
-            this.mCallStatus = AgentBar.CallStatus.CALL_IN;
+            this.mCallType =  Call_Type.COMMON_CALL_IN;
+            this.mCallStatus =  CallStatus.CALL_IN;
             this.m_agent_current_call_uuid = agent_call_uuid;
-            this.update_Toolbar_UI(AgentBar.Event_Type.FORCE_HANGUP_RING_MYSELF, "");
             string makeStr = string.Empty;
             makeStr = string.Concat(new string[]
             {
@@ -3114,23 +2802,6 @@ namespace PLAgent
 
         private void OnEvent_ForceHangup(string agentID, string reason, int retCode)
         {
-            AgentBar.Log.Debug(string.Concat(new object[]
-            {
-                "enter OnEvent_ForceHangup .agentID:",
-                agentID,
-                ",reason:",
-                reason,
-                ",retCode",
-                retCode
-            }));
-            if (retCode == 0)
-            {
-                this.update_Toolbar_UI(AgentBar.Event_Type.FORCE_HANGUP_SUCCESS, "");
-            }
-            else
-            {
-                this.update_Toolbar_UI(AgentBar.Event_Type.FORCE_HANGUP_FAIL, "");
-            }
             if (this.ForceHangupEvent != null)
             {
                 this.ForceHangupEvent(agentID, reason, retCode);
@@ -3139,23 +2810,10 @@ namespace PLAgent
 
         private void OnEvent_Internal_Caller_Ring(string agentID, string agent_call_uuid, string callerID, string callType, string relation_uuid)
         {
-            AgentBar.Log.Debug(string.Concat(new string[]
-            {
-                "enter OnEvent_Internal_Caller_Ring .agentID:",
-                agentID,
-                ",agent_call_uuid:",
-                agent_call_uuid,
-                ",callerID:",
-                callerID,
-                ",callType",
-                callType,
-                ",relation_uuid",
-                relation_uuid
-            }));
-            this.mCallType = AgentBar.Call_Type.AGENT_INTERNAL_CALL;
-            this.mCallStatus = AgentBar.CallStatus.CALL_OUT;
+           
+            this.mCallType =  Call_Type.AGENT_INTERNAL_CALL;
+            this.mCallStatus =  CallStatus.CALL_OUT;
             this.m_agent_current_call_uuid = agent_call_uuid;
-            this.update_Toolbar_UI(AgentBar.Event_Type.CALLIN_INTERNAL, "内部呼叫");
             string makeStr = string.Empty;
             makeStr = string.Concat(new string[]
             {
@@ -3173,14 +2831,14 @@ namespace PLAgent
             {
                 if (!this.DoAnswer())
                 {
-                    MessageBox.Show("接听失败！", "错误", MessageBoxButtons.OK, MessageBoxIcon.Asterisk);
+                    //MessageBox.Show("接听失败！", "错误", MessageBoxButtons.OK, MessageBoxIcon.Asterisk);
                 }
             }
         }
 
         private void OnEvent_Hangup(string hangupActiveFlag, string no_answered_alram_flag, string hangupReason, int retCode, string isEvaluated, string evaluateStatus, string evaluateDefaultResult, string agent_call_uuid, string relation_uuid)
         {
-            AgentBar.Log.Debug("enter OnEvent_Hangup .hangupReason:" + hangupReason);
+             Log.Debug("enter OnEvent_Hangup .hangupReason:" + hangupReason);
             this.mEavesdropAgent = "";
             this.m_agent_current_call_uuid = string.Empty;
             this.m_customer_current_call_uuid = string.Empty;
@@ -3198,16 +2856,16 @@ namespace PLAgent
                         }
                         else
                         {
-                            AgentBar.Log.Error("来电铃声文件 dududu.wav 不存在！");
+                             Log.Error("来电铃声文件 dududu.wav 不存在！");
                         }
                     }
                 }
                 this.CallSuccess = false;
-                //this.update_Toolbar_UI(AgentBar.Event_Type.HANGUP_CALL_SUCCESS, this.HangupReason2Chinese(hangupReason));
+                //this.update_Toolbar_UI( Event_Type.HANGUP_CALL_SUCCESS, this.HangupReason2Chinese(hangupReason));
             }
             else
             {
-                this.update_Toolbar_UI(AgentBar.Event_Type.HANGUP_CALL_FAIL, "挂断失败");
+                //this.update_Toolbar_UI( Event_Type.HANGUP_CALL_FAIL, "挂断失败");
             }
             //if ("0" == no_answered_alram_flag)
             //{
@@ -3226,7 +2884,7 @@ namespace PLAgent
             //        this.NoAnswerCallAlarmlEvent();
             //    }
             //}
-            this.mCallStatus = AgentBar.CallStatus.NO_CALL;
+            this.mCallStatus =  CallStatus.NO_CALL;
             string makeStr = string.Empty;
             makeStr = string.Concat(new string[]
             {
@@ -3246,9 +2904,7 @@ namespace PLAgent
             {
                 this.HangupEvent(hangupReason, retCode, makeStr);
             }
-            this.trmCall.Stop();
             this.timeCount = 1;
-            this.tsbState.Size = new Size(130, 36);
             this.needCleanUpTime = false;
         }
 
@@ -3347,7 +3003,7 @@ namespace PLAgent
 
         private void OnEvent_Get_Report_Statis_Info(string AgentID, int retCode, string reason, Dictionary<string, string> reportStatisInfo)
         {
-            AgentBar.Log.Debug("enter OnEvent_Get_Report_Statis_Info .");
+             Log.Debug("enter OnEvent_Get_Report_Statis_Info .");
             if (this.GetReportStatisInfoEvent != null)
             {
                 this.GetReportStatisInfoEvent(AgentID, retCode, reason, reportStatisInfo);
@@ -3361,29 +3017,20 @@ namespace PLAgent
                     "reason",
                     "reportStatisInfo"
                 };
-                this.ProcessAgentBarJsonDelegate(new object[]
-                {
-                    this.JSGetReportStatisInfoEvent,
-                    strArgsLst,
-                    AgentID,
-                    retCode,
-                    reason,
-                    reportStatisInfo
-                });
+                //this.ProcessAgentBarJsonDelegate(new object[]
+                //{
+                //    this.JSGetReportStatisInfoEvent,
+                //    strArgsLst,
+                //    AgentID,
+                //    retCode,
+                //    reason,
+                //    reportStatisInfo
+                //});
             }
         }
 
         private void OnEvent_Apply_Change_Status(string AgentID, int retCode, string reason)
         {
-            AgentBar.Log.Debug("enter OnEvent_Apply_Change_Status .");
-            if (retCode == 0)
-            {
-                this.update_Toolbar_UI(AgentBar.Event_Type.APPLY_CHANGE_STATUS_APPLY_SUCCESS, "离开申请中");
-            }
-            else
-            {
-                this.update_Toolbar_UI(AgentBar.Event_Type.APPLY_CHANGE_STATUS_APPLY_FAILED, "申请离开失败");
-            }
             if (this.ApplyChangeStatusEvent != null)
             {
                 this.ApplyChangeStatusEvent(AgentID, retCode, reason);
@@ -3404,11 +3051,10 @@ namespace PLAgent
                 tmp_apply_change_status.applyState = Apply_State.Apply_State_Applying;
                 tmp_apply_change_status.targetStatus = targetStatus;
                 tmp_apply_change_status.isFinished = false;
-                tmp_apply_change_status.applyType = AgentBar.str2ApplyType(applyType);
+                tmp_apply_change_status.applyType =  Utils.str2ApplyType(applyType);
                 if (AgentID == apply_agentid)
                 {
                     this.my_apply_change_status = tmp_apply_change_status;
-                    this.update_Toolbar_UI(AgentBar.Event_Type.APPLY_CHANGE_STATUS_APPLY_SUCCESS, "离开申请中");
                 }
                 if (this.mMyRoleAndRight.rights_of_view_agent_group_info && this.mMyRoleAndRight.controled_agent_group_lst != null)
                 {
@@ -3425,16 +3071,7 @@ namespace PLAgent
                         if (!isFound)
                         {
                             this.apply_change_status_to_approval_lst.Add(tmp_apply_change_status);
-                            if (this.tsbApprove.Image != Resources.approval)
-                            {
-                                this.tsbApprove.Image = Resources.approval;
-                                this.ApproveNormal = false;
-                                if (this.other != null && this.other.DropDownItems.Contains(this.tsbApprove) && this.other.Image != Resources.other1)
-                                {
-                                    this.other.Image = Resources.other1;
-                                    this.otherNormal = false;
-                                }
-                            }
+                            
                         }
                     }
                 }
@@ -3457,11 +3094,10 @@ namespace PLAgent
                         if (approveResult == "1")
                         {
                             this.my_apply_change_status.applyState = Apply_State.Apply_State_Exeute;
-                            this.update_Toolbar_UI(AgentBar.Event_Type.APPLY_CHANGE_STATUS_APPLY_SUCCESS, "申请离开审批通过");
+ 
                         }
                         else
                         {
-                            this.update_Toolbar_UI(AgentBar.Event_Type.APPLY_CHANGE_STATUS_APPLY_FAILED, "离开审批未通过");
                             this.initMyApplyChangeStatus();
                         }
                     }
@@ -3516,14 +3152,7 @@ namespace PLAgent
                     break;
                 }
             }
-            if (i >= this.apply_change_status_to_approval_lst.Count)
-            {
-                this.update_Toolbar_UI(AgentBar.Event_Type.APPLY_CHANGE_STATUS_NO_ANY_APPROVAL, "");
-            }
-            else
-            {
-                this.update_Toolbar_UI(AgentBar.Event_Type.APPLY_CHANGE_STATUS_SOME_APPLY, "");
-            }
+            
         }
 
         private void OnEvent_Apply_Change_Status_Cancel_Distribute(string AgentID, string apply_agentid, string targetStatus, int retCode, string reason)
@@ -3584,19 +3213,12 @@ namespace PLAgent
             {
                 Apply_Change_Status new_apply_agent = default(Apply_Change_Status);
                 new_apply_agent = apply_change_status_list[i];
-                new_apply_agent.applyState = AgentBar.IntStr2ApplyState(new_apply_agent.applyStateStr);
+                new_apply_agent.applyState =  IntStr2ApplyState(new_apply_agent.applyStateStr);
                 new_apply_agent.applyTime = ComFunc.TotalSecondToDateTime(new_apply_agent.applyTime);
-                new_apply_agent.applyType = AgentBar.str2ApplyType(new_apply_agent.applyType);
+                new_apply_agent.applyType =  Utils.str2ApplyType(new_apply_agent.applyType);
                 this.apply_change_status_to_approval_lst.Add(new_apply_agent);
             }
-            if (apply_change_status_list.Count == 0)
-            {
-                this.update_Toolbar_UI(AgentBar.Event_Type.APPLY_CHANGE_STATUS_NO_ANY_APPROVAL, "");
-            }
-            else
-            {
-                this.update_Toolbar_UI(AgentBar.Event_Type.APPLY_CHANGE_STATUS_SOME_APPLY, "");
-            }
+            
             if (this.GetChangeStatusApplyListEvent != null)
             {
                 this.GetChangeStatusApplyListEvent(this.AgentID, apply_change_status_list, retCode, reason);
@@ -3610,15 +3232,15 @@ namespace PLAgent
                     "retCode",
                     "reason"
                 };
-                this.ProcessAgentBarJsonDelegate(new object[]
-                {
-                    this.JSGetChangeStatusApplyListEvent,
-                    strArgsLst,
-                    this.AgentID,
-                    apply_change_status_list,
-                    retCode,
-                    reason
-                });
+                //this.ProcessAgentBarJsonDelegate(new object[]
+                //{
+                //    this.JSGetChangeStatusApplyListEvent,
+                //    strArgsLst,
+                //    this.AgentID,
+                //    apply_change_status_list,
+                //    retCode,
+                //    reason
+                //});
             }
         }
 
@@ -3685,49 +3307,23 @@ namespace PLAgent
                     "agentGroupNameLstStr",
                     "dicAgentGroupStatusMaxNum"
                 };
-                this.ProcessAgentBarJsonDelegate(new object[]
-                {
-                    this.JSGetAgentGroupStatusMaxNumEvent,
-                    strArgsLst,
-                    AgentID,
-                    agentGroupNameLstStr,
-                    dicAgentGroupStatusMaxNum
-                });
-            }
-        }
-
-        private void OnEvent_Apply_Change_Status_Cancel(string agentID, string targetStatus, int retCode, string reason)
-        {
-            if (retCode == 0)
-            {
-                this.update_Toolbar_UI(AgentBar.Event_Type.APPLY_CHANGE_STATUS_CANCEL_SUCCESS, "取消申请成功");
-                this.initMyApplyChangeStatus();
-            }
-            else
-            {
-                this.update_Toolbar_UI(AgentBar.Event_Type.APPLY_CHANGE_STATUS_CANCEL_FAILED, "取消申请失败");
+                //this.ProcessAgentBarJsonDelegate(new object[]
+                //{
+                //    this.JSGetAgentGroupStatusMaxNumEvent,
+                //    strArgsLst,
+                //    AgentID,
+                //    agentGroupNameLstStr,
+                //    dicAgentGroupStatusMaxNum
+                //});
             }
         }
 
         private void OnEvent_Apply_or_Approve_Change_Status_Timeout_Distribute(string agentID, string apply_agentid, string apply_agent_groupID, string targetStatus, string timeoutType)
         {
-            AgentBar.Log.Debug("enter OnEvent_Apply_or_Approve_Change_Status_Timeout_Distribute .");
+             Log.Debug("enter OnEvent_Apply_or_Approve_Change_Status_Timeout_Distribute .");
             if (this.AgentID == apply_agentid)
             {
-                if (timeoutType == "1")
-                {
-                    this.update_Toolbar_UI(AgentBar.Event_Type.APPLY_CHANGE_STATUS_APPLY_FAILED, "申请离开超时");
-                }
-                else
-                {
-                    if (!(timeoutType == "2"))
-                    {
-                        AgentBar.Log.Error("超时类型错误！timeoutType=" + timeoutType);
-                        return;
-                    }
-                    this.update_Toolbar_UI(AgentBar.Event_Type.APPLY_CHANGE_STATUS_APPLY_FAILED, "审批超时");
-                }
-                this.update_Toolbar_UI(AgentBar.Event_Type.APPLY_CHANGE_STATUS_APPLY_OR_APPROVE_TIMEOUT, "申请或审批超时");
+                
                 this.initMyApplyChangeStatus();
             }
             if (this.mMyRoleAndRight.rights_of_view_agent_group_info && this.mMyRoleAndRight.controled_agent_group_lst != null)
@@ -3788,8 +3384,8 @@ namespace PLAgent
         private void OnEvent_CheckExten(string agentID, string agent_call_uuid, string relation_uuid)
         {
             
-            this.mCallType = AgentBar.Call_Type.ECHO_TEST;
-            this.mCallStatus = AgentBar.CallStatus.CALL_OUT;
+            this.mCallType =  Call_Type.ECHO_TEST;
+            this.mCallStatus =  CallStatus.CALL_OUT;
             this.m_agent_current_call_uuid = agent_call_uuid;
             string makeStr = string.Empty;
             makeStr = string.Concat(new string[]
@@ -3814,9 +3410,9 @@ namespace PLAgent
             {
                 if (retCode == -69)
                 {
-                    this.chkIfHaveApplyChangeStatus();
+                    //this.chkIfHaveApplyChangeStatus();
                 }
-                AgentBar.Log.Debug("response error:" + strReason);
+                 Log.Debug("response error:" + strReason);
                 if (this.ServerResponse != null)
                 {
                     this.ServerResponse(AgentID, retCode, strReason);
@@ -3826,189 +3422,102 @@ namespace PLAgent
             switch (text)
             {
                 case "signin":
-                    if (0 != retCode)
-                    {
-                        this.update_Toolbar_UI(AgentBar.Event_Type.SIGNIN_FAIL, "");
-                    }
+                    
                     if (this.SignInResponse != null)
                     {
                         this.SignInResponse(AgentID, retCode, strReason);
                     }
                     break;
                 case "signout":
-                    if (0 != retCode)
-                    {
-                        this.update_Toolbar_UI(AgentBar.Event_Type.SIGNOUT_FAIL, "");
-                    }
+                    
                     if (this.SignOutResponse != null)
                     {
                         this.SignOutResponse(AgentID, retCode, strReason);
                     }
                     break;
                 case "calloutring":
-                    if (0 != retCode)
-                    {
-                        this.update_Toolbar_UI(AgentBar.Event_Type.CALLOUT_RING_MYSELF, "");
-                    }
+                    
                     break;
                 case "hangup":
-                    if (0 != retCode)
-                    {
-                        this.update_Toolbar_UI(AgentBar.Event_Type.HANGUP_CALL_FAIL, "挂断失败");
-                    }
+                    
                     break;
                 case "check":
-                    if (0 != retCode)
-                    {
-                        this.update_Toolbar_UI(AgentBar.Event_Type.ECHO_TEST_FAIL, "");
-                    }
+                    
                     break;
                 case "heartbeat":
                     this.OnHeartBeat();
                     break;
                 case "hold":
-                    if (0 != retCode)
-                    {
-                        this.update_Toolbar_UI(AgentBar.Event_Type.HOLD_FAIL, "");
-                    }
+                    
                     break;
                 case "stophold":
-                    if (0 != retCode)
-                    {
-                        this.update_Toolbar_UI(AgentBar.Event_Type.UNHOLD_FAIL, "");
-                    }
+                    
                     break;
                 case "consult":
-                    if (0 != retCode)
-                    {
-                        this.update_Toolbar_UI(AgentBar.Event_Type.CONSULT_FAIL, "");
-                    }
+                    
                     break;
                 case "consult_cancel":
-                    if (0 != retCode)
-                    {
-                        this.update_Toolbar_UI(AgentBar.Event_Type.CONSULT_CANCEL_FAIL, "");
-                    }
+                    
                     break;
                 case "consult_transfer":
-                    if (0 != retCode)
-                    {
-                        this.update_Toolbar_UI(AgentBar.Event_Type.CONSULT_TRANSFER_FAIL, "");
-                    }
+                    
                     break;
                 case "eavesdrop":
-                    if (0 != retCode)
-                    {
-                        this.update_Toolbar_UI(AgentBar.Event_Type.EAVESDROP_FAIL, "");
-                    }
+                    
                     break;
                 case "whisper":
-                    if (0 != retCode)
-                    {
-                        this.update_Toolbar_UI(AgentBar.Event_Type.WHISPER_FAIL, "");
-                    }
+                    
                     break;
                 case "bargein":
-                    if (0 != retCode)
-                    {
-                        this.update_Toolbar_UI(AgentBar.Event_Type.BARGE_IN_FAIL, "");
-                    }
+                    
                     break;
                 case "force_hangup":
-                    if (0 != retCode)
-                    {
-                        this.update_Toolbar_UI(AgentBar.Event_Type.FORCE_HANGUP_FAIL, "");
-                    }
+                    
                     break;
                 case "transfer_agent":
-                    if (0 != retCode)
-                    {
-                        this.update_Toolbar_UI(AgentBar.Event_Type.TRANSFER_AGENT_FAIL, "");
-                    }
+                    
                     break;
                 case "transfer_ivr":
-                    if (0 != retCode)
-                    {
-                        this.update_Toolbar_UI(AgentBar.Event_Type.TRANSFER_IVR_FAIL, "");
-                    }
+                    
                     break;
                 case "transfer_queue":
-                    if (0 != retCode)
-                    {
-                        this.update_Toolbar_UI(AgentBar.Event_Type.TRANSFER_QUEUE_FAIL, "");
-                    }
+                    
                     break;
                 case "transfer_ivr_profile":
-                    if (0 != retCode)
-                    {
-                        this.update_Toolbar_UI(AgentBar.Event_Type.TRANSFER_IVR_PROFILE_FAIL, "");
-                    }
+                    
                     break;
                 case "interrupt":
-                    if (0 != retCode)
-                    {
-                        this.update_Toolbar_UI(AgentBar.Event_Type.BARGE_IN_FAIL, "");
-                    }
+                    
                     break;
                 case "forcedisconnect":
-                    if (0 != retCode)
-                    {
-                        this.update_Toolbar_UI(AgentBar.Event_Type.FORCE_HANGUP_FAIL, "");
-                    }
+                    
                     break;
                 case "internal_call":
-                    if (0 != retCode)
-                    {
-                        this.update_Toolbar_UI(AgentBar.Event_Type.INTERNAL_CALL_AGENT_FAIL, "");
-                    }
+                    
                     break;
                 case "evaluate":
-                    if (0 != retCode)
-                    {
-                        this.update_Toolbar_UI(AgentBar.Event_Type.GRADE_FAIL, "");
-                    }
+                    
                     break;
                 case "get_access_numbers":
-                    if (0 != retCode)
-                    {
-                        this.update_Toolbar_UI(AgentBar.Event_Type.GET_ACCESS_NUMBERS_FAIL, "");
-                    }
+                    
                     break;
                 case "three_way_call":
-                    if (0 != retCode)
-                    {
-                        this.update_Toolbar_UI(AgentBar.Event_Type.THREE_WAY_FAIL, "");
-                    }
+                    
                     break;
                 case "three_way_call_cancel":
-                    if (0 != retCode)
-                    {
-                        this.update_Toolbar_UI(AgentBar.Event_Type.THREE_WAY_CANCEL_FAIL, "");
-                    }
+                    
                     break;
                 case "get_online_agent":
-                    if (0 != retCode)
-                    {
-                        this.update_Toolbar_UI(AgentBar.Event_Type.GET_ONLINE_AGENT_FAIL, "");
-                    }
+                    
                     break;
                 case "get_ivr_list":
-                    if (0 != retCode)
-                    {
-                        this.update_Toolbar_UI(AgentBar.Event_Type.GET_IVR_LIST_FAIL, "");
-                    }
+                    
                     break;
                 case "get_queue_list":
-                    if (0 != retCode)
-                    {
-                        this.update_Toolbar_UI(AgentBar.Event_Type.GET_QUEUE_LIST_FAIL, "");
-                    }
+                    
                     break;
                 case "get_agent_group_list":
-                    if (0 != retCode)
-                    {
-                        this.update_Toolbar_UI(AgentBar.Event_Type.GET_AGENT_GROUP_LIST_FAIL, "");
-                    }
+                    
                     break;
                 case "get_agents_of_queue":
                     if (0 != retCode)
@@ -4041,13 +3550,7 @@ namespace PLAgent
                     }
                     break;
                 case "get_report_statis_info":
-                    if (0 != retCode)
-                    {
-                        if (this.newFrmMonitorScreen != null)
-                        {
-                            this.newFrmMonitorScreen.Close();
-                        }
-                    }
+                    
                     break;
             }
         }
@@ -4068,7 +3571,6 @@ namespace PLAgent
         {
             if (status_change_agentid == this.my_apply_change_status.applyAgentID && this.my_apply_change_status.targetStatus == status_change_after)
             {
-                this.update_Toolbar_UI(AgentBar.Event_Type.APPLY_CHANGE_STATUS_FINISHED, "申请离开成功");
                 this.initMyApplyChangeStatus();
             }
             if (this.mMyRoleAndRight.rights_of_view_agent_group_info)
@@ -4144,73 +3646,25 @@ namespace PLAgent
             if (!(AgentID != status_change_agentid))
             {
                 this.mAgentStatus = status_change_after;
-                if (AgentBar.Str2AgentStatus(this.mAgentStatus) == AgentBar.Agent_Status.AGENT_STATUS_CAMP_ON)
+                if ( Utils.Str2AgentStatus(this.mAgentStatus) ==  Agent_Status.AGENT_STATUS_CAMP_ON)
                 {
-                    this.mAgentStateBeforeCallinOrCallout = AgentBar.Str2AgentStatus(status_change_before);
+                    this.mAgentStateBeforeCallinOrCallout = Utils.Str2AgentStatus(status_change_before);
                 }
-                if (AgentBar.Str2AgentStatus(this.mAgentStatus) == AgentBar.Agent_Status.AGENT_STATUS_IDLE)
+                if (Utils.Str2AgentStatus(this.mAgentStatus) ==  Agent_Status.AGENT_STATUS_IDLE)
                 {
-                    if (this.mAgentState == AgentBar.Agent_State.AGENT_STATUS_CAMP_ON)
+                    if (this.mAgentState ==  Agent_State.AGENT_STATUS_CAMP_ON)
                     {
-                        this.update_Toolbar_UI(AgentBar.Event_Type.AGENT_STATUS_CHANGE_TO_IDLE, "");
+                        //this.update_Toolbar_UI( Event_Type.AGENT_STATUS_CHANGE_TO_IDLE, "");
                     }
                 }
                 int i;
-                for (i = 0; i < this.tsbState.DropDownItems.Count; i++)
-                {
-                    if (this.tsbState.DropDownItems[i].AccessibleName == status_change_after)
-                    {
-                        this.tsbState.Enabled = true;
-                        this.tsbState.Image = this.tsbState.DropDownItems[i].Image;
-                        string tempStatus = this.tsbState.DropDownItems[i].Text.Trim();
-                        try
-                        {
-                            if (tempStatus.IndexOf(' ') >= 0)
-                            {
-                                tempStatus = tempStatus.Substring(0, this.tsbState.DropDownItems[i].Text.IndexOf(' '));
-                            }
-                            if (tempStatus.Length > 10)
-                            {
-                                this.tsbState.Text = tempStatus.Substring(0, 9) + "..";
-                                this.tsbState.ToolTipText = tempStatus;
-                            }
-                            else
-                            {
-                                this.tsbState.Text = tempStatus;
-                            }
-                            this.tsbState.AccessibleName = this.tsbState.DropDownItems[i].AccessibleName;
-                            this.update_Toolbar_UI(AgentBar.Event_Type.AGENT_STATUS_RESTORE, "");
-                            break;
-                        }
-                        catch (Exception ex)
-                        {
-                            AgentBar.Log.Error(string.Concat(new string[]
-                            {
-                                ex.Source,
-                                ",信息:",
-                                ex.Message,
-                                ",堆栈:",
-                                ex.StackTrace
-                            }));
-                        }
-                    }
-                }
+                
             }
         }
 
         private void OnEvent_ThrowException(string ex)
         {
-            AgentBar.Log.Debug("enter OnEvent_ThrowException .ex:");
-            if (this.transfercheck)
-            {
-                this.tsbTransfer.Enabled = true;
-            }
-            if (this.Consultcheck)
-            {
-                this.tsbConsult.Enabled = true;
-            }
-            MessageBox.Show(ex, "系统错误", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
-            AgentBar.Log.Fatal("发生严重错误:" + ex);
+            
         }
 
         private void OnEvent_CallOutRing(string agent_call_uuid, string callerID, string calledID, string accessNumName, string callType, string areaID, string areaName, string customer_num_format_local, string customer_num_format_national, string customer_num_format_e164, string customer_num_phone_type, string customerForeignId, string relation_uuid)
@@ -4306,11 +3760,11 @@ namespace PLAgent
                 Thread.Sleep(100);
                 if (!this.DoGetDefinedRoleRights())
                 {
-                    AgentBar.Log.Debug("获取坐席角色和权限失败！");
+                     Log.Debug("获取坐席角色和权限失败！");
                 }
                 if (!this.DoGetCustomerOfMyQueue())
                 {
-                    AgentBar.Log.Debug("获取坐席所属队列的客户信息失败！");
+                     Log.Debug("获取坐席所属队列的客户信息失败！");
                 }
                 Thread thr = new Thread(new ThreadStart(this.doSomeAsyncThing));
                 thr.Start();
@@ -4318,7 +3772,7 @@ namespace PLAgent
             }
             else
             {
-                AgentBar.Log.Debug("签入失败！正在断开连接............");
+                 Log.Debug("签入失败！正在断开连接............");
                 this.DoDisconnect();
             }
             if (this.SignInEvent != null)
@@ -4683,12 +4137,12 @@ namespace PLAgent
                     result = false;
                     return result;
                 }
-                IntPtr hwnd = AgentBar.GetProcessWindowHandle(this.SoftPhoneAppClassName, this.SoftPhoneAppName);
+                IntPtr hwnd =  GetProcessWindowHandle(this.SoftPhoneAppClassName, this.SoftPhoneAppName);
                 if (hwnd != IntPtr.Zero)
                 {
-                    if (!AgentBar.PostMessageApi(hwnd, this.SoftPhoneMsgValue, this.SoftPhoneLogoffCmd, this.SoftPhoneLogoffCmd))
+                    if (! PostMessageApi(hwnd, this.SoftPhoneMsgValue, this.SoftPhoneLogoffCmd, this.SoftPhoneLogoffCmd))
                     {
-                        MessageBox.Show("软电话签出失败！", "错误", MessageBoxButtons.OK, MessageBoxIcon.Asterisk);
+                        //MessageBox.Show("软电话签出失败！", "错误", MessageBoxButtons.OK, MessageBoxIcon.Asterisk);
                     }
                     Thread.Sleep(3000);
                     result = true;
@@ -4698,7 +4152,27 @@ namespace PLAgent
             result = false;
             return result;
         }
-
+        private bool start_process(string work_dir, string path, string args)
+        {
+            this.process_info = new ProcessStartInfo();
+            this.process_info.WorkingDirectory = work_dir;
+            this.process_info.FileName = path;
+            this.process_info.Arguments = args;
+            this.process_info.CreateNoWindow = true;
+            this.process_info.UseShellExecute = true;
+            bool result;
+            try
+            {
+                Process.Start(this.process_info);
+                result = true;
+            }
+            catch (Win32Exception we)
+            {
+                //MessageBox.Show(this, we.Message);
+                result = false;
+            }
+            return result;
+        }
         private int start_softphone_app()
         {
             int first_login_delay_time = 0;
@@ -4732,14 +4206,6 @@ namespace PLAgent
             }
             else
             {
-                if (this.mSipPhoneOnLineWarning)
-                {
-                    if (MessageBox.Show("内置软电话程序正在运行中，如果正在通话则电话将被挂断，您是否确定要关闭它？", "退出内置软电话", MessageBoxButtons.YesNo, MessageBoxIcon.Question) != DialogResult.Yes)
-                    {
-                        result = -2;
-                        return result;
-                    }
-                }
                 try
                 {
                     Process[] array = soft_phone_app_process;
@@ -4751,7 +4217,7 @@ namespace PLAgent
                 }
                 catch (Exception ex)
                 {
-                    MessageBox.Show(ex.Message);
+                    //MessageBox.Show(ex.Message);
                 }
                 Thread.Sleep(3000);
                 this.start_softphone_app();
@@ -4763,7 +4229,7 @@ namespace PLAgent
         public static IntPtr GetProcessWindowHandle(string className, string strProcTitle)
         {
             IntPtr hwnd = IntPtr.Zero;
-            return AgentBar.FindWindow(className, strProcTitle);
+            return  FindWindow(className, strProcTitle);
         }
 
         public bool DoSignOut()
@@ -5849,92 +5315,62 @@ namespace PLAgent
             return result;
         }
 
-        public int DoClickAgentBarButtonByName(string btnName)
-        {
-            int result;
-            if (string.IsNullOrEmpty(btnName))
-            {
-                result = -1;
-            }
-            else if (!this.agentTool.Items.ContainsKey(btnName) && !this.other.DropDownItems.Contains(this.tsbApprove))
-            {
-                result = -2;
-            }
-            else
-            {
-                if (this.agentTool.Items.ContainsKey(btnName))
-                {
-                    int btnIndex = this.agentTool.Items.IndexOfKey(btnName);
-                    this.agentTool.Items[btnIndex].PerformClick();
-                }
-                if (this.other.DropDownItems.Contains(this.tsbApprove))
-                {
-                    int btnIndex = this.other.DropDownItems.IndexOfKey(btnName);
-                    this.other.DropDownItems[btnIndex].PerformClick();
-                }
-                result = 0;
-            }
-            return result;
-        }
-
-
         private void ReceiveAgentEvents(AgentEvent agent_event)
         {
-            AgentBar.Log.Debug("enter ReceiveAgentEvents");
-            try
-            {
-                if (base.InvokeRequired)
-                {
-                    AgentBar.ReceiveEventHandler delegateEvtReceive = new AgentBar.ReceiveEventHandler(this.RaiseAllEvents);
-                    base.Invoke(delegateEvtReceive, new object[]
-                    {
-                        agent_event
-                    });
-                }
-                else
-                {
-                    this.RaiseAllEvents(agent_event);
-                }
-            }
-            catch (Exception e)
-            {
-                AgentBar.Log.Debug("enter ReceiveAgentEvents e: " + e.ToString());
-                AgentBar.Log.Debug("enter ReceiveAgentEvents e.Message: " + e.Message);
-                AgentBar.Log.Debug("enter ReceiveAgentEvents e.Source: " + e.Source);
-                AgentBar.Log.Debug("enter ReceiveAgentEvents e.StackTrace: " + e.StackTrace);
-            }
+             Log.Debug("enter ReceiveAgentEvents");
+            //try
+            //{
+            //    if (base.InvokeRequired)
+            //    {
+            //         ReceiveEventHandler delegateEvtReceive = new  ReceiveEventHandler(this.RaiseAllEvents);
+            //        base.Invoke(delegateEvtReceive, new object[]
+            //        {
+            //            agent_event
+            //        });
+            //    }
+            //    else
+            //    {
+            //        this.RaiseAllEvents(agent_event);
+            //    }
+            //}
+            //catch (Exception e)
+            //{
+            //     Log.Debug("enter ReceiveAgentEvents e: " + e.ToString());
+            //     Log.Debug("enter ReceiveAgentEvents e.Message: " + e.Message);
+            //     Log.Debug("enter ReceiveAgentEvents e.Source: " + e.Source);
+            //     Log.Debug("enter ReceiveAgentEvents e.StackTrace: " + e.StackTrace);
+            //}
         }
 
         private void ReceiveAgentHeartBeatEvents(AgentEvent agent_event)
         {
-            AgentBar.Log.Debug("enter ReceiveAgentHeartBeatEvents");
-            try
-            {
-                if (base.InvokeRequired)
-                {
-                    AgentBar.ReceiveHeartBeatEventHandler delegateHeartBeatEvtReceive = new AgentBar.ReceiveHeartBeatEventHandler(this.RaiseHeartBeatEvents);
-                    base.Invoke(delegateHeartBeatEvtReceive, new object[]
-                    {
-                        agent_event
-                    });
-                }
-                else
-                {
-                    this.RaiseHeartBeatEvents(agent_event);
-                }
-            }
-            catch (Exception e)
-            {
-                AgentBar.Log.Debug("enter ReceiveAgentHeartBeatEvents e: " + e.ToString());
-                AgentBar.Log.Debug("enter ReceiveAgentHeartBeatEvents e.Message: " + e.Message);
-                AgentBar.Log.Debug("enter ReceiveAgentHeartBeatEvents e.Source: " + e.Source);
-                AgentBar.Log.Debug("enter ReceiveAgentHeartBeatEvents e.StackTrace: " + e.StackTrace);
-            }
+            // Log.Debug("enter ReceiveAgentHeartBeatEvents");
+            //try
+            //{
+            //    if (base.InvokeRequired)
+            //    {
+            //         ReceiveHeartBeatEventHandler delegateHeartBeatEvtReceive = new  ReceiveHeartBeatEventHandler(this.RaiseHeartBeatEvents);
+            //        base.Invoke(delegateHeartBeatEvtReceive, new object[]
+            //        {
+            //            agent_event
+            //        });
+            //    }
+            //    else
+            //    {
+            //        this.RaiseHeartBeatEvents(agent_event);
+            //    }
+            //}
+            //catch (Exception e)
+            //{
+            //     Log.Debug("enter ReceiveAgentHeartBeatEvents e: " + e.ToString());
+            //     Log.Debug("enter ReceiveAgentHeartBeatEvents e.Message: " + e.Message);
+            //     Log.Debug("enter ReceiveAgentHeartBeatEvents e.Source: " + e.Source);
+            //     Log.Debug("enter ReceiveAgentHeartBeatEvents e.StackTrace: " + e.StackTrace);
+            //}
         }
 
         private void RaiseAllEvents(AgentEvent agent_event)
         {
-
             switch (agent_event.deAgentEventType)
             {
                 case AgentEventType.AGENT_EVENT_RESPONSE:
@@ -6118,15 +5554,15 @@ namespace PLAgent
                                         case EventQualifier.SignIn_Status:
                                             if (agent_event.retCode != 0)
                                             {
-                                                AgentBar.Log.Debug("签入响应失败！正在断开连接........");
+                                                 Log.Debug("签入响应失败！正在断开连接........");
                                                 bool blnRt = this.DoDisconnect();
                                                 if (blnRt)
                                                 {
-                                                    AgentBar.Log.Debug("执行DoDisconnect()成功！");
+                                                     Log.Debug("执行DoDisconnect()成功！");
                                                 }
                                                 else
                                                 {
-                                                    AgentBar.Log.Debug("执行DoDisconnect()失败！");
+                                                     Log.Debug("执行DoDisconnect()失败！");
                                                 }
                                             }
                                             this.ResponseEvent("signin", agent_event.agentID, agent_event.retCode, agent_event.reason);
@@ -6215,28 +5651,28 @@ namespace PLAgent
                                 this.OnEvent_CheckExten(agent_event.agentID, agent_event.agent_call_uuid, agent_event.relation_uuid);
                                 break;
                             case EventQualifier.Hold_NormalCall:
-                                this.OnEvent_hold_Result(agent_event.agentID, agent_event.retCode, agent_event.reason);
+                                //this.OnEvent_hold_Result(agent_event.agentID, agent_event.retCode, agent_event.reason);
                                 break;
                             case EventQualifier.StopHold_NormalCall:
-                                this.OnEvent_Unhold_Result(agent_event.agentID, agent_event.retCode, agent_event.reason);
+                                //this.OnEvent_Unhold_Result(agent_event.agentID, agent_event.retCode, agent_event.reason);
                                 break;
                             case EventQualifier.Mute_NormalCall:
-                                this.OnEvent_Mute_Result(agent_event.agentID, agent_event.retCode, agent_event.reason);
+                                //this.OnEvent_Mute_Result(agent_event.agentID, agent_event.retCode, agent_event.reason);
                                 break;
                             case EventQualifier.StopMute_NormalCall:
-                                this.OnEvent_Unmute_Result(agent_event.agentID, agent_event.retCode, agent_event.reason);
+                                //this.OnEvent_Unmute_Result(agent_event.agentID, agent_event.retCode, agent_event.reason);
                                 break;
                             case EventQualifier.Consult_Call_In:
                                 this.OnEvent_Consult_Callin(agent_event.agentID, agent_event.agent_call_uuid, agent_event.callerID, agent_event.calledID, agent_event.access_num_name, agent_event.consulterAgentNum, agent_event.call_type, agent_event.area_id, agent_event.area_name, agent_event.cust_grade, agent_event.outExtraParamsFromIvr, agent_event.todayDate, agent_event.customer_num_format_local, agent_event.customer_num_format_national, agent_event.customer_num_format_e164, agent_event.customer_num_phone_type, agent_event.customer_foreign_id, agent_event.predictCustomerForeignId, agent_event.predictCustomerName, agent_event.predictCustomerRemark, agent_event.relation_uuid);
                                 break;
                             case EventQualifier.Consult_Cancel_Result:
-                                this.OnEvent_Consult_Cancel(agent_event.agentID, agent_event.retCode, agent_event.reason);
+                                //this.OnEvent_Consult_Cancel(agent_event.agentID, agent_event.retCode, agent_event.reason);
                                 break;
                             case EventQualifier.Eavesdrop_Result:
                                 this.OnEvent_Eavesdrop(agent_event.agentID, agent_event.reason, agent_event.retCode);
                                 break;
                             case EventQualifier.Transfer_Blind_Agent_NormalCall:
-                                this.OnEvent_Transfer_Agent(agent_event.agentID, agent_event.retCode, agent_event.reason);
+                                //this.OnEvent_Transfer_Agent(agent_event.agentID, agent_event.retCode, agent_event.reason);
                                 break;
                             case EventQualifier.InterceptCall_NormalCall:
                                 this.EventResultEvent("intercept", agent_event.agentID, agent_event.retCode, agent_event.reason, agent_event.hangupReason);
@@ -6260,22 +5696,22 @@ namespace PLAgent
                                 this.OnEvent_PredictCallOutBridgeRing(agent_event.callerID, agent_event.calledID, agent_event.access_num_name, agent_event.makeStr, agent_event.call_type, agent_event.area_id, agent_event.area_name, agent_event.outExtraParamsFromIvr, agent_event.todayDate, agent_event.customer_num_format_local, agent_event.customer_num_format_national, agent_event.customer_num_format_e164, agent_event.customer_num_phone_type);
                                 break;
                             case EventQualifier.Get_Access_Numbers:
-                                this.OnEvent_Get_Access_Number(agent_event.agentID, agent_event.reason, agent_event.retCode, agent_event.accessNumbers);
+                                //this.OnEvent_Get_Access_Number(agent_event.agentID, agent_event.reason, agent_event.retCode, agent_event.accessNumbers);
                                 break;
                             case EventQualifier.Three_Way_Call_Result:
-                                this.OnEvent_Three_Way_Call(agent_event.agentID, agent_event.reason, agent_event.retCode);
+                                //this.OnEvent_Three_Way_Call(agent_event.agentID, agent_event.reason, agent_event.retCode);
                                 break;
                             case EventQualifier.Three_Way_Call_In:
                                 this.OnEvent_Three_Way_Call_In(agent_event.agentID, agent_event.agent_call_uuid, agent_event.callerID, agent_event.calledID, agent_event.access_num_name, agent_event.callerAgentNum, agent_event.call_type, agent_event.area_id, agent_event.area_name, agent_event.cust_grade, agent_event.outExtraParamsFromIvr, agent_event.todayDate, agent_event.customer_num_format_local, agent_event.customer_num_format_national, agent_event.customer_num_format_e164, agent_event.customer_num_phone_type, agent_event.customer_foreign_id, agent_event.predictCustomerForeignId, agent_event.predictCustomerName, agent_event.predictCustomerRemark, agent_event.relation_uuid);
                                 break;
                             case EventQualifier.Three_Way_Call_Cancel_Result:
-                                this.OnEvent_Three_Way_Cancel(agent_event.agentID, agent_event.reason, agent_event.retCode);
+                                //this.OnEvent_Three_Way_Cancel(agent_event.agentID, agent_event.reason, agent_event.retCode);
                                 break;
                             case EventQualifier.Consult_Call_Result:
-                                this.OnEvent_Consult(agent_event.agentID, agent_event.retCode, agent_event.reason);
+                                //this.OnEvent_Consult(agent_event.agentID, agent_event.retCode, agent_event.reason);
                                 break;
                             case EventQualifier.Consult_Transfer_Result:
-                                this.OnEvent_Consult_Transfer(agent_event.agentID, agent_event.retCode, agent_event.reason);
+                                //this.OnEvent_Consult_Transfer(agent_event.agentID, agent_event.retCode, agent_event.reason);
                                 break;
                             case EventQualifier.Whisper_Result:
                                 this.OnEvent_Whisper(agent_event.agentID, agent_event.reason, agent_event.retCode);
@@ -6299,10 +5735,10 @@ namespace PLAgent
                                 this.OnEvent_Force_Hangup_Ring(agent_event.agentID, agent_event.agent_call_uuid, agent_event.callerID, agent_event.calledID, agent_event.access_num_name, agent_event.destAgentID, agent_event.call_type, agent_event.area_id, agent_event.area_name, agent_event.cust_grade, agent_event.outExtraParamsFromIvr, agent_event.todayDate, agent_event.customer_num_format_local, agent_event.customer_num_format_national, agent_event.customer_num_format_e164, agent_event.customer_num_phone_type, agent_event.customer_foreign_id, agent_event.relation_uuid);
                                 break;
                             case EventQualifier.Transfer_Queue_NormalCall:
-                                this.OnEvent_Transfer_Queue(agent_event.agentID, agent_event.retCode, agent_event.reason);
+                                //this.OnEvent_Transfer_Queue(agent_event.agentID, agent_event.retCode, agent_event.reason);
                                 break;
                             case EventQualifier.Transfer_IVR_NormalCall:
-                                this.OnEvent_Transfer_Ivr(agent_event.agentID, agent_event.retCode, agent_event.reason);
+                                //this.OnEvent_Transfer_Ivr(agent_event.agentID, agent_event.retCode, agent_event.reason);
                                 break;
                             case EventQualifier.Transfer_Blind_Call_In:
                                 this.OnEvent_Transfer_Blind_Call_In(agent_event.agentID, agent_event.agent_call_uuid, agent_event.callerID, agent_event.calledID, agent_event.access_num_name, agent_event.callerAgentNum, agent_event.call_type, agent_event.area_id, agent_event.area_name, agent_event.cust_grade, agent_event.outExtraParamsFromIvr, agent_event.todayDate, agent_event.customer_num_format_local, agent_event.customer_num_format_national, agent_event.customer_num_format_e164, agent_event.customer_num_phone_type, agent_event.customer_foreign_id, agent_event.predictCustomerForeignId, agent_event.predictCustomerName, agent_event.predictCustomerRemark, agent_event.relation_uuid);
@@ -6356,13 +5792,13 @@ namespace PLAgent
                                 this.OnEvent_Threewayee_Hangup(agent_event.agentID, agent_event.hangupReason);
                                 break;
                             case EventQualifier.Get_Website_Info:
-                                this.OnEvent_GetWebSiteInfo(agent_event.agentID, agent_event.retCode, agent_event.reason, agent_event.agentWebSiteInfo);
+                                //this.OnEvent_GetWebSiteInfo(agent_event.agentID, agent_event.retCode, agent_event.reason, agent_event.agentWebSiteInfo);
                                 break;
                             case EventQualifier.Get_Ivr_Profile_List:
                                 this.OnEvent_Get_Ivr_Profile_List(agent_event.agentID, agent_event.ivr_profile_list, agent_event.reason, agent_event.retCode);
                                 break;
                             case EventQualifier.Transfer_IVR_Profile_NormalCall:
-                                this.OnEvent_Transfer_Ivr_Profile(agent_event.agentID, agent_event.retCode, agent_event.reason);
+                                //this.OnEvent_Transfer_Ivr_Profile(agent_event.agentID, agent_event.retCode, agent_event.reason);
                                 break;
                             case EventQualifier.Get_Queue_Statis:
                                 this.OnEvent_Get_Queue_Statis_Info(agent_event.agentID, agent_event.current_time, agent_event.queueNumLstStr, agent_event.queue_statis_list, agent_event.reason, agent_event.retCode);
@@ -6401,13 +5837,13 @@ namespace PLAgent
                                 this.OnEvent_Get_Agentgroup_Status_Max_Num(agent_event.agentID, agent_event.agentGroupNameLstStr, agent_event.status_max_num_list);
                                 break;
                             case EventQualifier.Set_Agentgroup_Status_Max_Num:
-                                this.OnEvent_Set_Agentgroup_Status_Max_Num(agent_event.agentID, agent_event.agent_group_name, agent_event.targetStatus, agent_event.retCode, agent_event.reason);
+                                //this.OnEvent_Set_Agentgroup_Status_Max_Num(agent_event.agentID, agent_event.agent_group_name, agent_event.targetStatus, agent_event.retCode, agent_event.reason);
                                 break;
                             case EventQualifier.Apply_or_Approve_Change_Status_Timeout_Distribute:
                                 this.OnEvent_Apply_or_Approve_Change_Status_Timeout_Distribute(agent_event.agentID, agent_event.apply_agent_id, agent_event.agentGroupID, agent_event.targetStatus, agent_event.timeoutType);
                                 break;
                             case EventQualifier.Apply_Change_Status_Cancel:
-                                this.OnEvent_Apply_Change_Status_Cancel(agent_event.agentID, agent_event.targetStatus, agent_event.retCode, agent_event.reason);
+                                //this.OnEvent_Apply_Change_Status_Cancel(agent_event.agentID, agent_event.targetStatus, agent_event.retCode, agent_event.reason);
                                 break;
                             case EventQualifier.Apply_Change_Status_Cancel_Distribute:
                                 this.OnEvent_Apply_Change_Status_Cancel_Distribute(agent_event.agentID, agent_event.apply_agent_id, agent_event.targetStatus, agent_event.retCode, agent_event.reason);
@@ -6506,7 +5942,7 @@ namespace PLAgent
 
         private void RaiseHeartBeatEvents(AgentEvent agent_event)
         {
-            AgentBar.Log.Debug(string.Concat(new object[]
+             Log.Debug(string.Concat(new object[]
             {
                 "enter RaiseHeartBeatEvents.eventType=",
                 agent_event.deAgentEventType,
@@ -6525,7 +5961,7 @@ namespace PLAgent
 
         private void BeginTheTimer()
         {
-            AgentBar.Log.Debug("enter BeginTheTimer .");
+             Log.Debug("enter BeginTheTimer .");
             object myobject = 7;
             this.HeartBeatTimes = 0;
             this.tmrHeartBeat = new System.Threading.Timer(new TimerCallback(this.testTheNet), myobject, this.mHeartBeatTimeout * 1000, this.mHeartBeatTimeout * 1000);
@@ -6533,7 +5969,7 @@ namespace PLAgent
 
         private void testTheNet(object myobject)
         {
-            AgentBar.Log.Debug("enter testTheNet .");
+             Log.Debug("enter testTheNet .");
             try
             {
                 if (!this.blnConnect)
@@ -6548,7 +5984,7 @@ namespace PLAgent
             }
             catch (Exception e)
             {
-                AgentBar.Log.Error(string.Concat(new string[]
+                 Log.Error(string.Concat(new string[]
                 {
                     e.Source,
                     ",信息:",
@@ -6561,26 +5997,26 @@ namespace PLAgent
 
         private void delegateSendMyPulse()
         {
-            AgentBar.Log.Debug("enter delegateSendMyPulse .");
+             Log.Debug("enter delegateSendMyPulse .");
             try
             {
                 this.HeartBeatTimes++;
                 if (this.HeartBeatTimes >= 3)
                 {
-                    AgentBar.Log.Debug("心跳超时！开始断开连接......");
+                     Log.Debug("心跳超时！开始断开连接......");
                     this.DoDisconnect();
                     this.SockDisconnectEvent("heartbeat timeout!", -1001);
-                    AgentBar.Log.Debug("心跳检测超时，断开连接！");
+                     Log.Debug("心跳检测超时，断开连接！");
                     this.tmrHeartBeat.Dispose();
                 }
                 else if (!this.DoHeartBeat())
                 {
-                    AgentBar.Log.Error("DoHeartBeat 调用失败");
+                     Log.Error("DoHeartBeat 调用失败");
                 }
             }
             catch (Exception e)
             {
-                AgentBar.Log.Error(string.Concat(new string[]
+                 Log.Error(string.Concat(new string[]
                 {
                     e.Source,
                     ",信息:",
@@ -6821,38 +6257,20 @@ namespace PLAgent
             return result;
         }
 
-        public void reCheckPrompt()
-        {
-            if (!this.NoAnswerCallNormal && this.other.DropDownItems.Contains(this.tsbNoAnswerCalls))
-            {
-                if (this.otherNormal)
-                {
-                    this.other.Image = Resources.other1;
-                }
-            }
-            if (!this.ApproveNormal && this.other.DropDownItems.Contains(this.tsbApprove))
-            {
-                if (this.otherNormal)
-                {
-                    this.other.Image = Resources.other1;
-                }
-            }
-        }
-
         public void DoShowKeyPad()
         {
-            if (this.newKeyPad == null || this.newKeyPad.IsDisposed)
-            {
-                this.newKeyPad = new FrmKeyPad();
-                this.newKeyPad.Show();
-                this.newKeyPad.Activate();
-                this.newKeyPad.agentBar1 = this;
-            }
-            else
-            {
-                this.newKeyPad.Show();
-                this.newKeyPad.Activate();
-            }
+            //if (this.newKeyPad == null || this.newKeyPad.IsDisposed)
+            //{
+            //    this.newKeyPad = new FrmKeyPad();
+            //    this.newKeyPad.Show();
+            //    this.newKeyPad.Activate();
+            //    this.newKeyPad.agentBar1 = this;
+            //}
+            //else
+            //{
+            //    this.newKeyPad.Show();
+            //    this.newKeyPad.Activate();
+            //}
         }
     }
 }

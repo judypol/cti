@@ -1,4 +1,5 @@
 ﻿using log4net;
+using log4net.Config;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -48,9 +49,9 @@ namespace PLAgent
 
         private PLSoftPhone.CallState callState;
 
-        private AxWonderRtcActivex cSipPhone;
+        //private AxWonderRtcActivex cSipPhone;
 
-        private IConnectionPoint icp;
+        //private IConnectionPoint icp;
 
         private int cookie;
 
@@ -60,7 +61,7 @@ namespace PLAgent
 
         private static ILog Log;
 
-        private IConnectionPointContainer icpc;
+        //private IConnectionPointContainer icpc;
 
         private Guid IID_IMyEvents;
 
@@ -74,17 +75,17 @@ namespace PLAgent
 
         public event PLSoftPhone.SoftPhoneAnswerEventHandle SoftPhoneAnswerEvent;
 
-        public AxWonderRtcActivex mySoftPhone
-        {
-            get
-            {
-                return this.cSipPhone;
-            }
-            set
-            {
-                this.cSipPhone = value;
-            }
-        }
+        //public AxWonderRtcActivex mySoftPhone
+        //{
+        //    get
+        //    {
+        //        return this.cSipPhone;
+        //    }
+        //    set
+        //    {
+        //        this.cSipPhone = value;
+        //    }
+        //}
 
         public PLSoftPhone(string _userName, string _pwd, string _serverip, int _port, bool _autoAnswer, 
             int _registTime, string _callid)
@@ -145,7 +146,7 @@ namespace PLAgent
             }
             else if (!this.initSipPhone())
             {
-                MessageBox.Show("软电话初始化失败！", "初始化软电话", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
+                //MessageBox.Show("软电话初始化失败！", "初始化软电话", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
                 result = false;
             }
             else
@@ -190,19 +191,19 @@ namespace PLAgent
             bool result;
             if (!PLSoftPhone.blnInitSoftPhone)
             {
-                if (0 != this.cSipPhone.Init())
-                {
-                    result = false;
-                    return result;
-                }
+                //if (0 != this.cSipPhone.Init())
+                //{
+                //    result = false;
+                //    return result;
+                //}
                 PLSoftPhone.blnInitSoftPhone = true;
             }
-            this.cSipPhone.CallconnectedMessage += new _DWonderRtcActivexEvents_CallconnectedMessageEventHandler(this.cSipPhone_CallconnectedMessage);
-            this.cSipPhone.CallendMessage += new _DWonderRtcActivexEvents_CallendMessageEventHandler(this.cSipPhone_CallendMessage);
-            this.cSipPhone.CallErrorMessage += new _DWonderRtcActivexEvents_CallErrorMessageEventHandler(this.cSipPhone_CallError);
-            this.cSipPhone.CallinMessage += new _DWonderRtcActivexEvents_CallinMessageEventHandler(this.cSipPhone_CallinMessage);
-            this.cSipPhone.RegistMessgage += new _DWonderRtcActivexEvents_RegistMessgageEventHandler(this.cSipPhone_RegistMessgage);
-            this.cSipPhone.RegistOffMessage += new _DWonderRtcActivexEvents_RegistOffMessageEventHandler(this.cSipPhone_RegistOffMessage);
+            //this.cSipPhone.CallconnectedMessage += new _DWonderRtcActivexEvents_CallconnectedMessageEventHandler(this.cSipPhone_CallconnectedMessage);
+            //this.cSipPhone.CallendMessage += new _DWonderRtcActivexEvents_CallendMessageEventHandler(this.cSipPhone_CallendMessage);
+            //this.cSipPhone.CallErrorMessage += new _DWonderRtcActivexEvents_CallErrorMessageEventHandler(this.cSipPhone_CallError);
+            //this.cSipPhone.CallinMessage += new _DWonderRtcActivexEvents_CallinMessageEventHandler(this.cSipPhone_CallinMessage);
+            //this.cSipPhone.RegistMessgage += new _DWonderRtcActivexEvents_RegistMessgageEventHandler(this.cSipPhone_RegistMessgage);
+            //this.cSipPhone.RegistOffMessage += new _DWonderRtcActivexEvents_RegistOffMessageEventHandler(this.cSipPhone_RegistOffMessage);
             result = true;
             return result;
         }
@@ -218,23 +219,24 @@ namespace PLAgent
             {
                 try
                 {
-                    if (this.cSipPhone == null)
-                    {
-                        result = false;
-                    }
-                    else
-                    {
-                        PLSoftPhone.Log.Debug("软电话注册中....");
-                        int rt = this.cSipPhone.Login(this.Pwd, this.ServerIp + ":" + this.Port, this.UserName);
-                        if (0 != rt)
-                        {
-                            result = false;
-                        }
-                        else
-                        {
-                            result = true;
-                        }
-                    }
+                    //if (this.cSipPhone == null)
+                    //{
+                    //    result = false;
+                    //}
+                    //else
+                    //{
+                    //    PLSoftPhone.Log.Debug("软电话注册中....");
+                    //    int rt = this.cSipPhone.Login(this.Pwd, this.ServerIp + ":" + this.Port, this.UserName);
+                    //    if (0 != rt)
+                    //    {
+                    //        result = false;
+                    //    }
+                    //    else
+                    //    {
+                    //        result = true;
+                    //    }
+                    //}
+                    result = true;
                 }
                 catch (Exception e)
                 {
@@ -250,15 +252,16 @@ namespace PLAgent
             bool result;
             try
             {
-                if (this.cSipPhone == null)
-                {
-                    result = false;
-                }
-                else
-                {
-                    this.cSipPhone.Logout();
-                    result = true;
-                }
+                //if (this.cSipPhone == null)
+                //{
+                //    result = false;
+                //}
+                //else
+                //{
+                //    this.cSipPhone.Logout();
+                //    result = true;
+                //}
+                result = false;
             }
             catch (Exception e)
             {
@@ -279,14 +282,15 @@ namespace PLAgent
             {
                 try
                 {
-                    if (this.cSipPhone == null)
-                    {
-                        result = false;
-                    }
-                    else
-                    {
-                        result = true;
-                    }
+                    //if (this.cSipPhone == null)
+                    //{
+                    //    result = false;
+                    //}
+                    //else
+                    //{
+                    //    result = true;
+                    //}
+                    result = false;
                 }
                 catch (Exception e)
                 {
@@ -302,18 +306,19 @@ namespace PLAgent
             bool result;
             try
             {
-                if (this.cSipPhone == null)
-                {
-                    result = false;
-                }
-                else if (0 != this.cSipPhone.Answercall())
-                {
-                    result = false;
-                }
-                else
-                {
-                    result = true;
-                }
+                //if (this.cSipPhone == null)
+                //{
+                //    result = false;
+                //}
+                //else if (0 != this.cSipPhone.Answercall())
+                //{
+                //    result = false;
+                //}
+                //else
+                //{
+                //    result = true;
+                //}
+                return false;
             }
             catch (Exception e)
             {
@@ -350,14 +355,15 @@ namespace PLAgent
             bool result;
             try
             {
-                if (this.cSipPhone == null)
-                {
-                    result = false;
-                }
-                else
-                {
-                    result = true;
-                }
+                //if (this.cSipPhone == null)
+                //{
+                //    result = false;
+                //}
+                //else
+                //{
+                //    result = true;
+                //}
+                return false;
             }
             catch (Exception e)
             {
@@ -372,15 +378,16 @@ namespace PLAgent
             bool result;
             try
             {
-                if (this.cSipPhone == null)
-                {
-                    result = false;
-                }
-                else
-                {
-                    this.cSipPhone.SetAutoAnswerStatus(autoAnswer);
-                    result = true;
-                }
+                //if (this.cSipPhone == null)
+                //{
+                //    result = false;
+                //}
+                //else
+                //{
+                //    this.cSipPhone.SetAutoAnswerStatus(autoAnswer);
+                //    result = true;
+                //}
+                return false;
             }
             catch (Exception e)
             {
@@ -395,15 +402,16 @@ namespace PLAgent
             bool result;
             try
             {
-                if (this.cSipPhone == null)
-                {
-                    result = false;
-                }
-                else
-                {
-                    this.cSipPhone.SetRegistExpires(registTimeLen);
-                    result = true;
-                }
+                //if (this.cSipPhone == null)
+                //{
+                //    result = false;
+                //}
+                //else
+                //{
+                //    this.cSipPhone.SetRegistExpires(registTimeLen);
+                //    result = true;
+                //}
+                return false;
             }
             catch (Exception e)
             {
@@ -418,18 +426,19 @@ namespace PLAgent
             bool result;
             try
             {
-                if (this.cSipPhone == null)
-                {
-                    result = false;
-                }
-                else if (0 != this.cSipPhone.Callout(callNum))
-                {
-                    result = false;
-                }
-                else
-                {
-                    result = true;
-                }
+                //if (this.cSipPhone == null)
+                //{
+                //    result = false;
+                //}
+                //else if (0 != this.cSipPhone.Callout(callNum))
+                //{
+                //    result = false;
+                //}
+                //else
+                //{
+                //    result = true;
+                //}
+                return false;
             }
             catch (Exception e)
             {
@@ -444,18 +453,19 @@ namespace PLAgent
             bool result;
             try
             {
-                if (this.cSipPhone == null)
-                {
-                    result = false;
-                }
-                else if (0 != this.cSipPhone.Hangup())
-                {
-                    result = false;
-                }
-                else
-                {
-                    result = true;
-                }
+                //if (this.cSipPhone == null)
+                //{
+                //    result = false;
+                //}
+                //else if (0 != this.cSipPhone.Hangup())
+                //{
+                //    result = false;
+                //}
+                //else
+                //{
+                //    result = true;
+                //}
+                return false;
             }
             catch (Exception e)
             {
@@ -470,14 +480,15 @@ namespace PLAgent
             bool result;
             try
             {
-                if (this.cSipPhone == null)
-                {
-                    result = false;
-                }
-                else
-                {
-                    result = true;
-                }
+                //if (this.cSipPhone == null)
+                //{
+                //    result = false;
+                //}
+                //else
+                //{
+                //    result = true;
+                //}
+                return false;
             }
             catch (Exception e)
             {
@@ -487,74 +498,74 @@ namespace PLAgent
             return result;
         }
 
-        private void cSipPhone_CallconnectedMessage(object sender, _DWonderRtcActivexEvents_CallconnectedMessageEvent e)
-        {
-            this.callState = PLSoftPhone.CallState.Talk;
-            if (this.SoftPhoneAnswerEvent != null)
-            {
-                this.SoftPhoneAnswerEvent();
-            }
-        }
+        //private void cSipPhone_CallconnectedMessage(object sender, _DWonderRtcActivexEvents_CallconnectedMessageEvent e)
+        //{
+        //    this.callState = PLSoftPhone.CallState.Talk;
+        //    if (this.SoftPhoneAnswerEvent != null)
+        //    {
+        //        this.SoftPhoneAnswerEvent();
+        //    }
+        //}
 
-        private void cSipPhone_CallendMessage(object sender, _DWonderRtcActivexEvents_CallendMessageEvent e)
-        {
-            this.callState = PLSoftPhone.CallState.Idle;
-            if (this.SoftPhoneHangupEvent != null)
-            {
-                this.SoftPhoneHangupEvent();
-            }
-        }
+        //private void cSipPhone_CallendMessage(object sender, _DWonderRtcActivexEvents_CallendMessageEvent e)
+        //{
+        //    this.callState = PLSoftPhone.CallState.Idle;
+        //    if (this.SoftPhoneHangupEvent != null)
+        //    {
+        //        this.SoftPhoneHangupEvent();
+        //    }
+        //}
 
-        private void cSipPhone_CallError(object sender, _DWonderRtcActivexEvents_CallErrorMessageEvent e)
-        {
-            PLSoftPhone.Log.Error("softPhone cSipPhone_CallError error!reason=" + e.message);
-        }
+        //private void cSipPhone_CallError(object sender, _DWonderRtcActivexEvents_CallErrorMessageEvent e)
+        //{
+        //    PLSoftPhone.Log.Error("softPhone cSipPhone_CallError error!reason=" + e.message);
+        //}
 
-        private void cSipPhone_CallinMessage(object sender, _DWonderRtcActivexEvents_CallinMessageEvent e)
-        {
-            this.callState = PLSoftPhone.CallState.Ring;
-            if (this.SoftPhoneCallInEvent != null)
-            {
-                this.SoftPhoneCallInEvent(e.mstr);
-            }
-        }
+        //private void cSipPhone_CallinMessage(object sender, _DWonderRtcActivexEvents_CallinMessageEvent e)
+        //{
+        //    this.callState = PLSoftPhone.CallState.Ring;
+        //    if (this.SoftPhoneCallInEvent != null)
+        //    {
+        //        this.SoftPhoneCallInEvent(e.mstr);
+        //    }
+        //}
 
-        private void cSipPhone_RegistMessgage(object sender, _DWonderRtcActivexEvents_RegistMessgageEvent e)
-        {
-            if (e.message == "regist failed")
-            {
-                if (this.SoftPhoneRegistResultEvent != null)
-                {
-                    this.SoftPhoneRegistResultEvent(-1);
-                }
-            }
-            else
-            {
-                if (this.callState == PLSoftPhone.CallState.UnRegister)
-                {
-                    this.callState = PLSoftPhone.CallState.Idle;
-                }
-                if (this.SoftPhoneRegistResultEvent != null)
-                {
-                    this.SoftPhoneRegistResultEvent(0);
-                }
-            }
-        }
+        //private void cSipPhone_RegistMessgage(object sender, _DWonderRtcActivexEvents_RegistMessgageEvent e)
+        //{
+        //    if (e.message == "regist failed")
+        //    {
+        //        if (this.SoftPhoneRegistResultEvent != null)
+        //        {
+        //            this.SoftPhoneRegistResultEvent(-1);
+        //        }
+        //    }
+        //    else
+        //    {
+        //        if (this.callState == PLSoftPhone.CallState.UnRegister)
+        //        {
+        //            this.callState = PLSoftPhone.CallState.Idle;
+        //        }
+        //        if (this.SoftPhoneRegistResultEvent != null)
+        //        {
+        //            this.SoftPhoneRegistResultEvent(0);
+        //        }
+        //    }
+        //}
 
-        private void cSipPhone_RegistOffMessage(object sender, _DWonderRtcActivexEvents_RegistOffMessageEvent e)
-        {
-            if (e.message == "Registed Off")
-            {
-                if (this.SoftPhoneLogoutResultEvent != null)
-                {
-                    this.SoftPhoneLogoutResultEvent(0);
-                }
-            }
-            else if (this.SoftPhoneLogoutResultEvent != null)
-            {
-                this.SoftPhoneLogoutResultEvent(-1);
-            }
-        }
+        //private void cSipPhone_RegistOffMessage(object sender, _DWonderRtcActivexEvents_RegistOffMessageEvent e)
+        //{
+        //    if (e.message == "Registed Off")
+        //    {
+        //        if (this.SoftPhoneLogoutResultEvent != null)
+        //        {
+        //            this.SoftPhoneLogoutResultEvent(0);
+        //        }
+        //    }
+        //    else if (this.SoftPhoneLogoutResultEvent != null)
+        //    {
+        //        this.SoftPhoneLogoutResultEvent(-1);
+        //    }
+        //}
 
         private void ReceiveEvents(int ch, int state, string msg)
         {
@@ -605,7 +616,7 @@ namespace PLAgent
                         {
                             if (PLSoftPhone.blnInitSoftPhone)
                             {
-                                this.icp.Unadvise(this.cookie);
+                                //this.icp.Unadvise(this.cookie);
                                 PLSoftPhone.blnInitSoftPhone = false;
                                 PLSoftPhone.Log.Debug("软电话断开事件连接！");
                             }
