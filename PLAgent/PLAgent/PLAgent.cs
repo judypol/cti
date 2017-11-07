@@ -5317,56 +5317,13 @@ namespace PLAgent
 
         private void ReceiveAgentEvents(AgentEvent agent_event)
         {
-             Log.Debug("enter ReceiveAgentEvents");
-            //try
-            //{
-            //    if (base.InvokeRequired)
-            //    {
-            //         ReceiveEventHandler delegateEvtReceive = new  ReceiveEventHandler(this.RaiseAllEvents);
-            //        base.Invoke(delegateEvtReceive, new object[]
-            //        {
-            //            agent_event
-            //        });
-            //    }
-            //    else
-            //    {
-            //        this.RaiseAllEvents(agent_event);
-            //    }
-            //}
-            //catch (Exception e)
-            //{
-            //     Log.Debug("enter ReceiveAgentEvents e: " + e.ToString());
-            //     Log.Debug("enter ReceiveAgentEvents e.Message: " + e.Message);
-            //     Log.Debug("enter ReceiveAgentEvents e.Source: " + e.Source);
-            //     Log.Debug("enter ReceiveAgentEvents e.StackTrace: " + e.StackTrace);
-            //}
+            this.RaiseAllEvents(agent_event);
         }
 
         private void ReceiveAgentHeartBeatEvents(AgentEvent agent_event)
         {
-            // Log.Debug("enter ReceiveAgentHeartBeatEvents");
-            //try
-            //{
-            //    if (base.InvokeRequired)
-            //    {
-            //         ReceiveHeartBeatEventHandler delegateHeartBeatEvtReceive = new  ReceiveHeartBeatEventHandler(this.RaiseHeartBeatEvents);
-            //        base.Invoke(delegateHeartBeatEvtReceive, new object[]
-            //        {
-            //            agent_event
-            //        });
-            //    }
-            //    else
-            //    {
-            //        this.RaiseHeartBeatEvents(agent_event);
-            //    }
-            //}
-            //catch (Exception e)
-            //{
-            //     Log.Debug("enter ReceiveAgentHeartBeatEvents e: " + e.ToString());
-            //     Log.Debug("enter ReceiveAgentHeartBeatEvents e.Message: " + e.Message);
-            //     Log.Debug("enter ReceiveAgentHeartBeatEvents e.Source: " + e.Source);
-            //     Log.Debug("enter ReceiveAgentHeartBeatEvents e.StackTrace: " + e.StackTrace);
-            //}
+            this.RaiseHeartBeatEvents(agent_event);
+            
         }
 
         private void RaiseAllEvents(AgentEvent agent_event)

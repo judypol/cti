@@ -7,6 +7,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PLAgent", "PLAgent\PLAgent.
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PLAgentDll", "..\PLAgentDll\PLAgentDll.csproj", "{2894EF8F-62A2-4E36-A440-CE4C2CFCA6FD}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PLAgentUnit", "PLAgentUnit\PLAgentUnit.csproj", "{1981EAF2-4DB0-445B-86B3-0193EFBE9B62}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -21,6 +23,10 @@ Global
 		{2894EF8F-62A2-4E36-A440-CE4C2CFCA6FD}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{2894EF8F-62A2-4E36-A440-CE4C2CFCA6FD}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{2894EF8F-62A2-4E36-A440-CE4C2CFCA6FD}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1981EAF2-4DB0-445B-86B3-0193EFBE9B62}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1981EAF2-4DB0-445B-86B3-0193EFBE9B62}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1981EAF2-4DB0-445B-86B3-0193EFBE9B62}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1981EAF2-4DB0-445B-86B3-0193EFBE9B62}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
